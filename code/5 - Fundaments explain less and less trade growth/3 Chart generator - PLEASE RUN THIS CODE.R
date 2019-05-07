@@ -117,7 +117,7 @@ stat.country.year$Year <- as.character(stat.country.year$Year)
 stat.country.year$Year <- as.numeric(stat.country.year$Year)
 fig3 <- ggplot(subset(subset(stat.country.year, importer %in% c("G20", "China", "USA", "Japan", "Germany"))), aes(x=Year, y=weighted.TC, color=importer))+
   geom_line(size = 1.1) +
-  scale_y_continuous(limits = c(1.5,3.2), breaks=seq(1.5,3,.5), labels=seq(1.5,3,.5), sec.axis = dup_axis()) +
+  scale_y_continuous(limits = c(2,3.2), breaks=seq(2,3,.5), labels=seq(2,3,.5), sec.axis = dup_axis()) +
   gta_theme() +
   ylab("Weighted trade cost\nfaced by importer") +
   scale_color_manual(values = gta_colour$qualitative[c(1,2,3,8,7)]) +
