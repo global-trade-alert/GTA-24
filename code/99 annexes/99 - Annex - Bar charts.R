@@ -29,7 +29,7 @@ master$protect=as.numeric(master$gta.evaluation!="Green")
 master$year=year(master$date.implemented)
 bars.yr=aggregate(intervention.id ~ i.un + year + protect, subset(master, i.un %in% g20.members & is.na(date.implemented)==F) , function(x) length(unique(x)))
 
-bars=expand.grid(unique(bars.yr$i.un),c(2009:2018), c(0,1))
+bars=expand.grid(unique(bars.yr$i.un),c(2009:2019), c(0,1))
 names(bars)=c("i.un","year", "protect")
 bars$measures=apply(bars, 1, function(x) sum(subset(bars.yr, i.un==x[1] & year<=x[2] & protect==x[3])$intervention.id))
 
@@ -43,9 +43,9 @@ write.xlsx(bars, file="tables & figures/annex - p. 3 & 4 - bottom - bar charts/D
   p1 <- ggplot(data=subset(bars, i.un==32 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==32 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -58,7 +58,7 @@ write.xlsx(bars, file="tables & figures/annex - p. 3 & 4 - bottom - bar charts/D
   p2 <- ggplot(data=subset(bars, i.un==32 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==32 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -104,9 +104,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==32 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==32 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -119,7 +119,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==32 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==32 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -166,9 +166,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==36 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==36 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -181,7 +181,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==36 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==36 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -226,9 +226,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==36 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==36 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -241,7 +241,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==36 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==36 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -290,9 +290,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==76 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==76 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -305,7 +305,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==76 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==76 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -350,9 +350,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==76 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==76 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -365,7 +365,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==76 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==76 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -413,9 +413,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==124 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==124 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -428,7 +428,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==124 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==124 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -473,9 +473,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==124 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==124 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -488,7 +488,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==124 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==124 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -536,9 +536,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==156 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==156 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -551,7 +551,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==156 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==156 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -596,9 +596,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==156 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==156 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -611,7 +611,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==156 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==156 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -659,9 +659,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==251 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==251 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -674,7 +674,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==251 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==251 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -719,9 +719,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==251 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==251 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -734,7 +734,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==251 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==251 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -782,9 +782,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==276 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==276 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -797,7 +797,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==276 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==276 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -842,9 +842,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==276 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==276 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -857,7 +857,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==276 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==276 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -906,9 +906,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==699 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==699 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -921,7 +921,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==699 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==699 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -966,9 +966,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==699 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==699 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -981,7 +981,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==699 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==699 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1029,9 +1029,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==360 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==360 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1044,7 +1044,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==360 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==360 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1089,9 +1089,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==360 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==360 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1104,7 +1104,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==360 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==360 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1152,9 +1152,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==381 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==381 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1167,7 +1167,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==381 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==381 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1212,9 +1212,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==381 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==381 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1227,7 +1227,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==381 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==381 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1275,9 +1275,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==392 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==392 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1290,7 +1290,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==392 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==392 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1335,9 +1335,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==392 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==392 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1350,7 +1350,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==392 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==392 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1398,9 +1398,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==484 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==484 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1413,7 +1413,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==484 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==484 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1458,9 +1458,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==484 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==484 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1473,7 +1473,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==484 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==484 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1521,9 +1521,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==410 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==410 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1536,7 +1536,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==410 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==410 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1581,9 +1581,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==410 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==410 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1596,7 +1596,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==410 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==410 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1644,9 +1644,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==643 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==643 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1659,7 +1659,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==643 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==643 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1704,9 +1704,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==643 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==643 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1719,7 +1719,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==643 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==643 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1767,9 +1767,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==682 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==682 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1782,7 +1782,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==682 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==682 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1827,9 +1827,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==682 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==682 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1842,7 +1842,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==682 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==682 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1890,9 +1890,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==710 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==710 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1905,7 +1905,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==710 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==710 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -1950,9 +1950,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==710 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==710 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -1965,7 +1965,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==710 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==710 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -2013,9 +2013,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==792 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==792 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -2028,7 +2028,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==792 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==792 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -2073,9 +2073,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==792 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==792 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -2088,7 +2088,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==792 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==792 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -2137,9 +2137,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==826 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==826 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -2152,7 +2152,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==826 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==826 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -2197,9 +2197,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==826 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==826 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -2212,7 +2212,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==826 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==826 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -2260,9 +2260,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==840 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==840 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -2275,7 +2275,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==840 & protect==1), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[2])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==840 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
@@ -2320,9 +2320,9 @@ dev.off()
   p1 <- ggplot(data=subset(bars, i.un==840 & protect==0), aes(y=measures, x=year))+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==840 & protect==1)$measures)/100+.5)*100)))+
-    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year\n",
+    labs(x="\nYear", y="Number of interventions implemented\nfrom November 2008 until the end of the given year (or YTD)\n",
          fill="")+
     theme(legend.position="bottom", legend.justification="left",
           panel.background = element_rect(fill =gta_colour$panel.bg), 
@@ -2335,7 +2335,7 @@ dev.off()
   p2 <- ggplot(data=subset(bars, i.un==840 & protect==0), aes(y=measures, x=year))+
     geom_text(aes(label=measures), position=position_dodge(width=0.9), vjust=-0.5)+
     geom_bar(stat="identity", fill=gta_colour$blue[4])+
-    scale_x_continuous(breaks=2009:2018)+
+    scale_x_continuous(breaks=2009:2019)+
     scale_y_continuous(limits=c(0,as.numeric(round(max(subset(bars, i.un==840 & protect==1)$measures)/100+.5)*100)))+
     labs(x="Year", y="Number of interventions implemented\nfrom November 2008 until the end of the given year",
          fill="")+
