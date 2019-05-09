@@ -26,8 +26,6 @@ for(cty in g20.member.names){
                      implementation.period = c("2008-11-01",cutoff),
                      exporters=cty,
                      keep.exporters = T,
-                     intervention.ids = remove.ids,
-                     keep.interventions = F,
                      implementer.role = c("importer","3rd country"),
                      mast.chapters = chapters,
                      keep.mast = T,
