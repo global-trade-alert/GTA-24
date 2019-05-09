@@ -322,10 +322,18 @@ gta_trade_coverage(coverage.period=c(2018,2018),
 other.stuff=other.stuff+sum(trade.coverage.estimates[,4])
 us.stuff=us.stuff+trade.coverage.estimates[which(trade.coverage.estimates$`Exporting country`=="China"),4]
 
+# Then the first left hand column would have the Trump tariff increases of 2018, 
+gta_trade_coverage(coverage.period=c(2018,2018),
+                   intervention.ids = trade.war.us,
+                   keep.interventions = T,
+                   exporters = "China",
+                   keep.exporters = T,
+                   trade.data="2017",
+                   trade.statistic = "value",
+                   intra.year.duration = F)
 
+us.2018=trade.coverage.estimates[,4]
 
-war.perspective=data.frame(act.title="Other\nUS/CHN\ninterventions\nin 2018",
-                           value=other.stuff)
 
 
 # second the next column on the left would add the Chinese tariff increases and 
@@ -338,23 +346,9 @@ gta_trade_coverage(coverage.period=c(2018,2018),
                    trade.statistic = "value",
                    intra.year.duration = F)
 
-war.perspective=rbind(war.perspective,
-                      data.frame(act.title="China\ntariffs\n2018",
-                                 value=trade.coverage.estimates[,4]))
+chn.2018=trade.coverage.estimates[,4]
 
-# Then the first left hand column would have the Trump tariff increases of 2018, 
-gta_trade_coverage(coverage.period=c(2018,2018),
-                   intervention.ids = trade.war.us,
-                   keep.interventions = T,
-                   exporters = "China",
-                   keep.exporters = T,
-                   trade.data="2017",
-                   trade.statistic = "value",
-                   intra.year.duration = F)
 
-war.perspective=rbind(war.perspective,
-                      data.frame(act.title="US\ntariffs\n2018",
-                                 value=trade.coverage.estimates[,4]))
 
 # third column from the left would add Trump’s very recent tariff threats on top. 
 # tweet.war=63051
@@ -367,19 +361,30 @@ war.perspective=rbind(war.perspective,
 #                    trade.statistic = "value",
 #                    intra.year.duration = F)
 
-war.perspective=rbind(war.perspective,
-                      data.frame(act.title="Trump\nthreat\nMay\n2019",
-                                 value=us.chn-trade.coverage.estimates[,4]))
 
 
 
 ## total bilateral trade
+
+war.perspective=data.frame(act.title="US\ntariffs\n2018",
+                           value=us.2018)
+
+war.perspective=rbind(war.perspective,
+                      data.frame(act.title="China\ntariffs\n2018",
+                                 value=chn.2018))
+
+war.perspective=rbind(war.perspective,
+                      data.frame(act.title="Other\nUS/CHN\ninterventions\nin 2018",
+                                 value=other.stuff)
+)
+
+war.perspective=rbind(war.perspective,
+                      data.frame(act.title="Trump\nthreat\nMay\n2019",
+                                 value=us.chn-us.2018))
 war.perspective=rbind(war.perspective,
                       data.frame(act.title="Total\nbilateral\ntrade",
                            value=chn.us+us.chn))
 
-
-xlsx::write.xlsx(war.terfall, file=paste(output.path, "/Trade war interventions in US-CHN bilateral perspective.xlsx",sep=""), row.names=F)
 
 
 ## exciting waterfall version
@@ -390,15 +395,12 @@ war.terfall$act.title=factor(war.terfall$act.title, levels=war.terfall$act.title
 war.terfall$id=1:nrow(war.terfall)
 war.terfall$end=cumsum(war.terfall$value)
 war.terfall$end[nrow(war.terfall)]=war.terfall$value[nrow(war.terfall)]
-war.terfall$end[nrow(war.terfall)-1]=war.terfall$value[nrow(war.terfall)]
+war.terfall$end[war.terfall$act.title=="Trump\nthreat\nMay\n2019"]=war.terfall$end[war.terfall$act.title=="Trump\nthreat\nMay\n2019"]-us.stuff/1000000000
 war.terfall$value[nrow(war.terfall)]=war.terfall$end[nrow(war.terfall)]-war.terfall$end[nrow(war.terfall)-1]
 war.terfall$start <- c(0, head(war.terfall$end, -1))
 
 
-war.terfall$start[nrow(war.terfall)-1]=war.terfall$start[nrow(war.terfall)-1]-round(us.stuff/1000000000,2)
-war.terfall$end[nrow(war.terfall)-1]=war.terfall$start[nrow(war.terfall)-1]+war.terfall$value[nrow(war.terfall)-1]
-war.terfall$start[nrow(war.terfall)]=war.terfall$end[nrow(war.terfall)-1]
-war.terfall$value[nrow(war.terfall)]=war.terfall$end[nrow(war.terfall)] - war.terfall$end[nrow(war.terfall)-1]
+war.terfall$start[war.terfall$act.title=="Trump\nthreat\nMay\n2019"]=war.terfall$start[war.terfall$act.title=="Trump\nthreat\nMay\n2019"]-us.stuff/1000000000
 war.terfall=war.terfall[,c(3,1,5,4,2)]
 
 war.terfall.xlsx=war.terfall
