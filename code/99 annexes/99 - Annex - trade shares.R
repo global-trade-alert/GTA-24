@@ -30,7 +30,7 @@ for(cty in g20.member.names){
                      mast.chapters = chapters,
                      keep.mast = T,
                      group.mast = F,
-                     intervention.ids = c(70350, 18891, 16819, 71578, 58794, 18254, 13633, 15366, 13512, 18892),
+                     intervention.ids = c(70350, 18891, 16819, 71578, 58794, 18254, 13633, 15366, 13512, 18892, 69601),
                      keep.interventions = F)
     
     trade.coverage.estimates=trade.coverage.estimates[,c(3,4,6:ncol(trade.coverage.estimates))]
