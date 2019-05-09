@@ -272,6 +272,7 @@ gta_trade_coverage(coverage.period=c(2018,2018),
                    keep.implementer = T,
                    exporters = c("China","United States of America"),
                    keep.exporters = T,
+                   group.exporters = F,
                    intervention.types = unique(intervention.groups$intervention.type[intervention.groups$group.name=="Tariffs and trade defence"]),
                    keep.type = T,
                    implementation.period = c("2018-01-01","2018-12-31"),
@@ -281,6 +282,7 @@ gta_trade_coverage(coverage.period=c(2018,2018),
                    nr.exporters = c(2,999))
 
 other.stuff=sum(trade.coverage.estimates[,4])
+us.stuff=trade.coverage.estimates[which(trade.coverage.estimates$`Exporting country`=="China"),4]
 
 gta_trade_coverage(coverage.period=c(2018,2018),
                    gta.evaluation = c("Red", "Amber"),
@@ -289,6 +291,7 @@ gta_trade_coverage(coverage.period=c(2018,2018),
                    keep.implementer = T,
                    exporters = c("China","United States of America"),
                    keep.exporters = T,
+                   group.exporters = F,
                    intervention.types = unique(intervention.groups$intervention.type[intervention.groups$group.name=="Tariffs and trade defence"]),
                    keep.type = F,
                    implementation.period = c("2018-01-01","2018-12-31"),
@@ -298,6 +301,7 @@ gta_trade_coverage(coverage.period=c(2018,2018),
                    nr.exporters = c(2,999))
 
 other.stuff=other.stuff+sum(trade.coverage.estimates[,4])
+us.stuff=us.stuff+trade.coverage.estimates[which(trade.coverage.estimates$`Exporting country`=="China"),4]
 
 gta_trade_coverage(coverage.period=c(2018,2018),
                    gta.evaluation = c("Red", "Amber"),
@@ -306,6 +310,7 @@ gta_trade_coverage(coverage.period=c(2018,2018),
                    keep.implementer = T,
                    exporters = c("China","United States of America"),
                    keep.exporters = T,
+                   group.exporters = F,
                    intervention.types = unique(intervention.groups$intervention.type[intervention.groups$group.name=="Tariffs and trade defence"]),
                    keep.type = F,
                    implementation.period = c("2018-01-01","2018-12-31"),
@@ -315,6 +320,7 @@ gta_trade_coverage(coverage.period=c(2018,2018),
                    nr.exporters = c(1,1))
 
 other.stuff=other.stuff+sum(trade.coverage.estimates[,4])
+us.stuff=us.stuff+trade.coverage.estimates[which(trade.coverage.estimates$`Exporting country`=="China"),4]
 
 
 
@@ -373,7 +379,7 @@ war.perspective=rbind(war.perspective,
                            value=chn.us+us.chn))
 
 
-xlsx::write.xlsx(war.perspective, file=paste(output.path, "/Trade war interventions in US-CHN bilateral perspective.xlsx", row.names=F))
+xlsx::write.xlsx(war.terfall, file=paste(output.path, "/Trade war interventions in US-CHN bilateral perspective.xlsx",sep=""), row.names=F)
 
 
 ## exciting waterfall version
@@ -388,9 +394,42 @@ war.terfall$end[nrow(war.terfall)-1]=war.terfall$value[nrow(war.terfall)]
 war.terfall$value[nrow(war.terfall)]=war.terfall$end[nrow(war.terfall)]-war.terfall$end[nrow(war.terfall)-1]
 war.terfall$start <- c(0, head(war.terfall$end, -1))
 
-war.terfall$start[nrow(war.terfall)-1]=war.terfall$end[nrow(war.terfall)]-war.terfall$value[nrow(war.terfall)-1]
-war.terfall$start[nrow(war.terfall)]=0
+
+war.terfall$start[nrow(war.terfall)-1]=war.terfall$start[nrow(war.terfall)-1]-round(us.stuff/1000000000,2)
+war.terfall$end[nrow(war.terfall)-1]=war.terfall$start[nrow(war.terfall)-1]+war.terfall$value[nrow(war.terfall)-1]
+war.terfall$start[nrow(war.terfall)]=war.terfall$end[nrow(war.terfall)-1]
+war.terfall$value[nrow(war.terfall)]=war.terfall$end[nrow(war.terfall)] - war.terfall$end[nrow(war.terfall)-1]
 war.terfall=war.terfall[,c(3,1,5,4,2)]
+
+war.terfall.xlsx=war.terfall
+names(war.terfall.xlsx)=c("ID", "Action", "Starting Value", "Ending value","Change")
+xlsx::write.xlsx(war.terfall.xlsx, file=paste(output.path, "/Trade war interventions in bilateral perspective.xlsx",sep=""), row.names=F)
+
+
+#### classic waterfall
+warter.shed=ggplot(war.terfall, aes(act.title, fill = act.title)) + 
+  geom_rect(aes(x = act.title, 
+                xmin = id - 0.45, xmax = id + 0.45, 
+                ymin = end, ymax = start))+
+  scale_fill_manual(values=c(gta_colour$qualitative[c(1,7,5,3,8)]))+
+  scale_y_continuous(limit=c(0,700),breaks=seq(0,700,100), sec.axis = dup_axis())+
+  labs(x="", y="USD billion", color="")+
+  gta_theme(x.bottom.angle = 0)+
+  theme(axis.text.x.bottom = element_text(vjust = 0.5, size=18),
+        axis.text.y.left = element_text(size=18),
+        axis.text.y.right = element_text(size=18),
+        axis.title.y.left = element_text(size=16),
+        axis.title.y.right = element_text(size=16),
+        axis.title.x.bottom = element_text(size=18),
+        legend.position="none")
+
+gta_plot_saver(plot=warter.shed,
+               path=output.path,
+               name="Trade war in bilateral perspective - waterfall chart",
+               eps=F)
+
+### with full right-hand bar
+war.terfall$start[nrow(war.terfall)]=0
 
 warter.shed=ggplot(war.terfall, aes(act.title, fill = act.title)) + 
   geom_rect(aes(x = act.title, 
@@ -410,9 +449,8 @@ warter.shed=ggplot(war.terfall, aes(act.title, fill = act.title)) +
 
 gta_plot_saver(plot=warter.shed,
                path=output.path,
-               name="Trade war interventions in US-CHN bilateral perspective - waterfall chart",
+               name="Trade war in bilateral perspective - waterfall chart with full rhs bar",
                eps=F)
-
 
 
 ## boring bar plot version
