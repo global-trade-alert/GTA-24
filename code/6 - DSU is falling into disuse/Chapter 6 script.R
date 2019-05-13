@@ -6,6 +6,7 @@ library(openxlsx)
 library(ggplot2)
 library(tidyverse)
 library(lubridate)
+library(pracma)
 
 
 ## Pick-thy-folder
@@ -13,8 +14,8 @@ library(lubridate)
 #setwd("C:/Users/Piotr Lukaszuk/Dropbox/GTA cloud")
 # setwd("/Users/piotrlukaszuk/Dropbox/GTA cloud")
 #setwd('C:/Users/Kamran/Dropbox/GTA cloud')
-# setwd("/Users/patrickbuess/Dropbox/Collaborations/GTA cloud")
-setwd('D:/Dropbox/Dropbox/GTA cloud')
+setwd("/Users/patrickbuess/Dropbox/Collaborations/GTA cloud")
+# setwd('D:/Dropbox/Dropbox/GTA cloud')
 
 chapter.nr = 6
 chapter.name = '6 - DSU is falling into disuse'
@@ -221,13 +222,21 @@ fig4 <- subset(fig4, is.na(`Trade in trillion USD`)==F)
 # fig4$DSU.trade.ratio <- fig4$DSU / fig4$`Trade in trillion USD`
 fig4$DSU.trade.ratio <- fig4$`Trade in trillion USD` / fig4$DSU
 
+# MOVING AVERAGE
+periods = 3
+fig4$dsu.mvavg <- movavg(fig4$DSU, periods, type=c("s"))
+fig4$ratio.mvavg <- movavg(fig4$DSU.trade.ratio, periods, type=c("s"))
+
+names(fig4) <- c("Year","DSU","Trade in trillion USD","DSU trade ratio" ,"DSU moving average", "Ratio moving average")
 write.xlsx(fig4, file=paste0(output.path,"/Table for Figure ",chapter.nr,".2.xlsx"), row.names=F)
-fig4.plot <- gather(fig4, type, value, c("DSU","Trade in trillion USD","DSU.trade.ratio"))
+fig4.plot <- gather(fig4, type, value, c("DSU","Trade in trillion USD","DSU trade ratio","DSU moving average","Ratio moving average"))
 
 
 plot4 <- ggplot()+
   geom_line(data=subset(fig4.plot, type == "DSU"), aes(x=Year, y=value, colour=type), size=1)+
-  geom_line(data=subset(fig4.plot, type == "DSU.trade.ratio"), aes(x=Year, y=value/(1.5/30), colour=type), size=1)+
+  geom_line(data=subset(fig4.plot, type == "DSU trade ratio"), aes(x=Year, y=value/(1.5/30), colour=type), size=1)+
+  geom_line(data=subset(fig4.plot, type == "DSU moving average"), aes(x=Year, y=value, colour=type), size=1)+
+  geom_line(data=subset(fig4.plot, type == "Ratio moving average"), aes(x=Year, y=value/(1.5/30), colour=type), size=1)+
   gta_plot_wrapper(data=fig4.plot,
                    data.x="Year",
                    data.y="value",
@@ -238,8 +247,9 @@ plot4 <- ggplot()+
                    y.right.transform = (1.5/30),
                    y.right.limits = c(0,1.5),
                    y.right.breaks = c(seq(0,1.5,0.5)),
+                   colour.palette = gta_colour$qualitative[c(1,2,3,4)],
                    y.right.name = "Ratio of intra-G20 trade in trillion USD\nto new DSU complaints between G20 members",
-                   colour.labels = c("Number of DSU complaints","Ratio of intra-G20 trade to complaints"),
+                   colour.labels = c("Number of DSU complaints","Moving average of number of DSU complaints", "Ratio of intra-G20 trade to complaints","Moving average of ratio of intra-G20 trade to complaints"),
                    colour.legend.title = NULL)+
   gta_theme()
 
@@ -348,7 +358,7 @@ master <- coverages
 master <- master[master$affected != master$implementing,]
 
 # SAVE XLSX
-master.xlsx <- spread(master, year, share)
+master.xlsx <- tidyr::spread(master, year, share)
 write.xlsx(master.xlsx, file=paste0(output.path,"/Table for Figure ",chapter.nr,".3.xlsx"), sheetName = "Trade coverages", row.names = F)
 
 master.xlsx[is.na(master.xlsx)] <- 999
@@ -398,8 +408,8 @@ for (i in c(2009,2012,2015,2018)) {
     gta_theme(x.bottom.angle = 45)+
     scale_fill_gradientn(name="Percentage of bilateral exports \nfacing importer\'s trade distortions", 
                          colours = c(gta_colour$green[2], gta_colour$green[2], "#ffcc00", gta_colour$amber[2], gta_colour$red[1]), values=c(0,0.2,0.25,0.5,1), 
-                         breaks=c(0,0.2,0.5,0.8,max(subset(master, year == i & share != 999)$share)), labels=c("0%","20%","50%","70%", paste0('   ',scales::percent(max(subset(master, year == i & share != 999)$share)))),
-                         limits=c(0,max(subset(master, year == i & share != 999)$share)),
+                         breaks=c(0,0.2,0.5,0.7,1), labels=c("0%","20%","50%","70%", "100%"),
+                         limits=c(0,1),
                          guide=guide_colorbar(barwidth=13, title.position = "bottom", hjust=1, label.hjust=0.3))+
     scale_y_continuous(breaks=seq(1,length(unique(country.df$number)),1), labels = country.names, sec.axis = sec_axis(~., breaks=seq(1,length(unique(country.df$number)),1), labels = country.names, name = "Affected country"))+
     scale_x_continuous(breaks=seq(1,length(unique(country.df$number)),1), labels = country.names)+
