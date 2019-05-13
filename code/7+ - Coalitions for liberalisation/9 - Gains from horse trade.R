@@ -27,9 +27,13 @@ rm(coalition.members, coalition.stats)
 
 gains.from.horse.trade=data.frame()
 
-for(c.id in cs.multi$coalition.id){
+## restricting to cases where there is a mulit-sectoral coalition
+for(c.id in subset(cs.multi, member.size>0)$coalition.id){
   iuw=cs.multi$import.utility.weight[cs.multi$coalition.id== c.id]
-  horse=merge(cSplit(subset(cs.multi, coalition.id==c.id), which(names(cs.multi)=="sector.scope"), sep=",", direction="long")[,c("coalition.id", "sector.scope")],
+  
+  multi.sectors=cSplit(subset(cs.multi, coalition.id==c.id), which(names(cs.multi)=="sector.scope"), sep=",", direction="long")[,c("coalition.id", "sector.scope")]
+  
+  horse=merge(multi.sectors,
               subset(cs.single, import.utility.weight==iuw)[,c("sector.scope","coalition.liberalised.trade")],
               by="sector.scope", all.x=T)
   
@@ -45,16 +49,18 @@ for(c.id in cs.multi$coalition.id){
 
 gains.from.horse.trade$abs.gain=gains.from.horse.trade$horse.gain-gains.from.horse.trade$individual.gain
 
-gains.from.horse.trade=gains.from.horse.trade[order(gains.from.horse.trade$abs.gain)]
+gains.from.horse.trade=gains.from.horse.trade[order(-gains.from.horse.trade$abs.gain),]
 
 ## overview plot: economic mass
-horse.overview= 
-  ggplot(gains.from.horse.trade, aes(x=abs.gain/1000000000, fill=as.factor(import.utility.weight)))+
-  geom_histogram(bins=200, position="identity", alpha=.7)+
+horse.overview=
+  ggplot(gains.from.horse.trade, aes(x=abs.gain/1000000000, fill=as.factor(import.utility.weight), alpha=as.factor(import.utility.weight)))+
+  geom_histogram(bins=200, position="identity")+
   scale_fill_manual(values=c(gta_colour$qualitative[c(1,3,5,7)]))+
-  labs(x="Difference of liberalised import value in multi-sector agreement\ncompared to the sum of the single-sector agreements,\nbillion USD ", 
+  scale_alpha_manual(values=c(1,.6,.6,.6))+
+  labs(x="Difference of liberalised import value in multi-sector agreement\nand the sum of the single-sector agreements,\nbillion USD ", 
        y="Nr of agreements",
        fill="Import aversion")+
+  guides(alpha=F)+
   scale_x_continuous(breaks=seq(-1000,2000,200), labels=prettyNum(seq(-1000,2000,200), big.mark = "'"))+
   coord_cartesian(ylim = c(0, 100))+
   gta_theme()
@@ -69,6 +75,19 @@ gfht.xlsx=gains.from.horse.trade
 names(gfht.xlsx)=c("Coalition ID","Sectors included","Import aversion","Sum of liberalised imports, multi-sector", "Sum of liberalised imports, single-sector", "Gain from multi-sector agreement")
 
 xlsx::write.xlsx(gfht.xlsx, file=paste(output.path,"/Figure ",chapter.number,".1 - Change in liberalised world imports.xlsx", sep=""), row.names = F)
+
+manual.distribution=data.frame()
+
+for(i in seq(-580,2000,10)){
+  m.d.c=subset(gains.from.horse.trade, abs.gain>=(i-10)*1000000000 & abs.gain<i*1000000000)
+  
+  if(nrow(m.d.c)>0){
+    m.d=aggregate(coalition.id ~ import.utility.weight, m.d.c, function(x) length(unique(x)))
+    m.d$bracket=i
+    manual.distribution=rbind(manual.distribution, m.d)
+    
+  }
+}
 
 
 ## Critical masses of multi-sector agreements
@@ -98,6 +117,7 @@ critical.mass=
   ggplot(data=mc.density,aes(x=bin, y=share, fill=as.factor(type)))+
   geom_bar(stat="identity", position = "dodge")+
   scale_fill_manual(values=c(gta_colour$qualitative[c(1,3)]))+
+  scale_x_continuous(breaks=seq(0,1,.2))+
   labs(x="Share of sectoral world imports",
        y="Share of observed coalitions", 
        fill="Coalition   \nscope")+
@@ -212,7 +232,7 @@ map1=
         legend.text.align = 0
   ) +
   guides(fill=guide_legend(title=paste("Change in the\nnumber of sectors\ncovered by the agreement", sep=""), label.position = "top"),
-         ymax=guide_legend(titel="size"))
+         ymax=guide_legend(title="size"))
 
 
 map1
