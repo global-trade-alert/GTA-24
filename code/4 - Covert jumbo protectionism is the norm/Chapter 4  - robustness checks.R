@@ -27,7 +27,8 @@ source("0 report production/GTA 24/help files/GTA 24 cutoff and definitions.R")
 ## levels: 1 = percent, 2 = total budget (USD) 
 
 # jumbo intervention.ids
-load("0 report production/GTA 24/data/4 - Covert jumbo protectionism is the norm/trade per jumbo(10bn) intervention.Rdata")
+# load("0 report production/GTA 24/data/4 - Covert jumbo protectionism is the norm/trade per jumbo(10bn) intervention.Rdata")
+load("0 report production/GTA 24/data/4 - Covert jumbo protectionism is the norm/conservative jumbos 10bn.Rdata")
 
 ## gta database replica
 load("data/database replica/database replica - parts - base.Rdata")
