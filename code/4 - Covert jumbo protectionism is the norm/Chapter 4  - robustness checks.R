@@ -69,7 +69,7 @@ non.sgl.sect.jumbo = jumbo.ids[!jumbo.ids %in% ids.single.sector]
 
 jumbo.counts = data.frame(count.jumbos.10bn = length(jumbo.ids), 
                           count.non.single.sector.jumbos.10bn = length(non.sgl.sect.jumbo))
-colnames(jumbo.counts) = c('Number of jumbos', 'Number of jumbos without single-sector measures')
+colnames(jumbo.counts) = c('Number of jumbos', 'Jumbos affecting more than one sector')
 
 ## NOT IN REPORT
 # xlsx::write.xlsx(jumbo.counts, row.names=F, sheetName = "Number of jumbos",file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''))
