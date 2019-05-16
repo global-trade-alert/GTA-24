@@ -50,7 +50,9 @@ total.jumbo.budgets$trade.exceeds.100x.budget = 'No'
 condition = which(total.jumbo.budgets$trade.value > 100*as.numeric(as.character(total.jumbo.budgets$new.level)))
 total.jumbo.budgets$trade.exceeds.100x.budget[condition] = 'Yes'
 total.jumbo.budgets$observed.multiplier=round(total.jumbo.budgets$trade.value/as.numeric(as.character(total.jumbo.budgets$new.level)),2)
-names(total.jumbo.budgets) = c('Intervention ID', 'Total(USD) Budget', 'Trade affected', 'Does trade affected exceed 100 x total budget?','Observed multiplier (trade/budget)')
+total.jumbo.budgets$intervention.id=paste("https://www.globaltradealert.org/intervention/", total.jumbo.budgets$intervention.id, sep="")
+names(total.jumbo.budgets) = c('Intervention URL', 'Total(USD) Budget', 'Trade affected', 'Does trade affected exceed 100 x total budget?','Observed multiplier (trade/budget)')
+xlsx::write.xlsx(total.jumbo.budgets, row.names=F, sheetName = 'trade values & budgets',file = paste("0 report production/GTA 24/tables & figures/",output.path,"/removal jumbos affected trade exceeding 100 times budget.xlsx",sep=''), append=T)
 
 ## NOT IN REPORT
 # xlsx::write.xlsx(budget.stats, row.names=F, sheetName = 'known budgets', file = paste("0 report production/GTA 24/tables & figures/",output.path,"/removal jumbos affected trade exceeding 100 times budget.xlsx",sep=''))
