@@ -73,6 +73,6 @@ colnames(jumbo.counts) = c('Number of jumbos', 'Jumbos affecting more than one s
 
 ## NOT IN REPORT
 # xlsx::write.xlsx(jumbo.counts, row.names=F, sheetName = "Number of jumbos",file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''))
-# xlsx::write.xlsx(data.frame(single.sector.jumbos = intersect(jumbo.ids,ids.single.sector)), sheetName = "Single sector jumbos", row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''), append = T)
+# xlsx::write.xlsx(data.frame(single.sector.jumbos = intersect(jumbo.ids,ids.single.sector), Intervention.URL = paste0("https://www.globaltradealert.org/intervention/", intersect(jumbo.ids, ids.single.sector))), sheetName = "Single sector jumbos", row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''), append = T)
 
 
