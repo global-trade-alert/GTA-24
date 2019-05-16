@@ -61,8 +61,10 @@ xlsx::write.xlsx(total.jumbo.budgets, row.names=F, sheetName = 'trade values & b
 ## Check 2:
 # Please find out how many jumbos are left if measures affecting a single sector are dropped
 gta_data_slicer()
+#
 ids.single.sector = subset(aggregate(affected.sector~intervention.id, subset(cSplit(master.sliced,which(colnames(master.sliced)=='affected.sector'), direction = "long", sep = ",",drop=TRUE), select=c('intervention.id','affected.sector')),
                                      function(x) length(unique(x))), affected.sector == 1)$intervention.id
+#
 non.sgl.sect.jumbo = jumbo.ids[!jumbo.ids %in% ids.single.sector]
 
 jumbo.counts = data.frame(count.jumbos.10bn = length(jumbo.ids), 
