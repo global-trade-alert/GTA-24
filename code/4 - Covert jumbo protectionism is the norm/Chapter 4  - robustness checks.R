@@ -85,11 +85,11 @@ trade.non.sgl.jumbos = sum(unique(subset(coverage.base, intervention.id %in% non
                                          select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
 #World exports covered by the jumbos excluding the small number (I think 12) 
 #where the budget is known to be less than 1% of trade affected
-trade.non.outlier.jumbos = sum(unique(subset(coverage.base, intervention.id %in% jumbo.ids & !intervention.id %in% jumbo.budget.outliers & currently.in.force == 'Yes',
+trade.non.outlier.jumbos = sum(unique(subset(coverage.base, intervention.id %in% setdiff(jumbo.ids, jumbo.budget.outliers) & currently.in.force == 'Yes',
                                              select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
 #World exports covered by the jumbos that are not single sector 
 #and where the budget is too small (see above.)
-trade.non.outlier.sgl.jumbos = sum(unique(subset(coverage.base, intervention.id %in% non.sgl.sect.jumbo & !intervention.id %in% jumbo.budget.outliers &currently.in.force == 'Yes',
+trade.non.outlier.sgl.jumbos = sum(unique(subset(coverage.base, intervention.id %in% setdiff(non.sgl.sect.jumbo, jumbo.budget.outliers)&currently.in.force == 'Yes',
                                                  select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
 trade.affected = data.frame(trade.jumbos = trade.jumbos, 
                             trade.non.sgl.jumbos = trade.non.sgl.jumbos, 
