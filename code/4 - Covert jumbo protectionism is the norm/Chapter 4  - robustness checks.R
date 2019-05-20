@@ -29,6 +29,8 @@ source("0 report production/GTA 24/help files/GTA 24 cutoff and definitions.R")
 # jumbo intervention.ids
 load("0 report production/GTA 24/data/4 - Covert jumbo protectionism is the norm/trade per jumbo(10bn) intervention.Rdata")
 
+# trade coverage base
+load(paste0("0 report production/GTA 24/data/", output.path,"/coverage base.Rdata"))
 
 ## gta database replica
 load("data/database replica/database replica - parts - base.Rdata")
@@ -49,14 +51,13 @@ total.jumbo.budgets = subset(jumbo.budgets, level.unit == 2, select = c('interve
 total.jumbo.budgets$trade.exceeds.100x.budget = 'No'
 condition = which(total.jumbo.budgets$trade.value > 100*as.numeric(as.character(total.jumbo.budgets$new.level)))
 total.jumbo.budgets$trade.exceeds.100x.budget[condition] = 'Yes'
+jumbo.budget.outliers = subset(total.jumbo.budgets, trade.exceeds.100x.budget == 'Yes')$intervention.id
 total.jumbo.budgets$observed.multiplier=round(total.jumbo.budgets$trade.value/as.numeric(as.character(total.jumbo.budgets$new.level)),2)
 total.jumbo.budgets$intervention.id=paste("https://www.globaltradealert.org/intervention/", total.jumbo.budgets$intervention.id, sep="")
 names(total.jumbo.budgets) = c('Intervention URL', 'Total(USD) Budget', 'Trade affected', 'Does trade affected exceed 100 x total budget?','Observed multiplier (trade/budget)')
-xlsx::write.xlsx(total.jumbo.budgets, row.names=F, sheetName = 'trade values & budgets',file = paste("0 report production/GTA 24/tables & figures/",output.path,"/removal jumbos affected trade exceeding 100 times budget.xlsx",sep=''), append=T)
-
 ## NOT IN REPORT
-# xlsx::write.xlsx(budget.stats, row.names=F, sheetName = 'known budgets', file = paste("0 report production/GTA 24/tables & figures/",output.path,"/removal jumbos affected trade exceeding 100 times budget.xlsx",sep=''))
-# xlsx::write.xlsx(total.jumbo.budgets, row.names=F, sheetName = 'trade over 100x budget',file = paste("0 report production/GTA 24/tables & figures/",output.path,"/removal jumbos affected trade exceeding 100 times budget.xlsx",sep=''), append=T)
+xlsx::write.xlsx(budget.stats, row.names=F, sheetName = 'known budgets', file = paste("0 report production/GTA 24/tables & figures/",output.path,"/removal jumbos affected trade exceeding 100 times budget.xlsx",sep=''))
+xlsx::write.xlsx(total.jumbo.budgets, row.names=F, sheetName = 'trade values & budgets',file = paste("0 report production/GTA 24/tables & figures/",output.path,"/removal jumbos affected trade exceeding 100 times budget.xlsx",sep=''), append=T)
 
 ## Check 2:
 # Please find out how many jumbos are left if measures affecting a single sector are dropped
@@ -72,7 +73,30 @@ jumbo.counts = data.frame(count.jumbos.10bn = length(jumbo.ids),
 colnames(jumbo.counts) = c('Number of jumbos', 'Jumbos affecting more than one sector')
 
 ## NOT IN REPORT
-# xlsx::write.xlsx(jumbo.counts, row.names=F, sheetName = "Number of jumbos",file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''))
-# xlsx::write.xlsx(data.frame(single.sector.jumbos = intersect(jumbo.ids,ids.single.sector), Intervention.URL = paste0("https://www.globaltradealert.org/intervention/", intersect(jumbo.ids, ids.single.sector))), sheetName = "Single sector jumbos", row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''), append = T)
+xlsx::write.xlsx(jumbo.counts, row.names=F, sheetName = "Number of jumbos",file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''))
+xlsx::write.xlsx(data.frame(single.sector.jumbos = intersect(jumbo.ids,ids.single.sector), Intervention.URL = paste0("https://www.globaltradealert.org/intervention/", intersect(jumbo.ids, ids.single.sector))), sheetName = "Single sector jumbos", row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Non-single sector jumbos.xlsx",sep=''), append = T)
 
-
+## Check 3: Find values of world exports covered by different jumbos
+#World exports "covered" by the 348 jumbo measures
+trade.jumbos = sum(unique(subset(coverage.base, intervention.id %in% jumbo.ids & currently.in.force == 'Yes', 
+                                 select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+#World exports covered by the jumbos that are not single sector
+trade.non.sgl.jumbos = sum(unique(subset(coverage.base, intervention.id %in% non.sgl.sect.jumbo & currently.in.force == 'Yes', 
+                                         select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+#World exports covered by the jumbos excluding the small number (I think 12) 
+#where the budget is known to be less than 1% of trade affected
+trade.non.outlier.jumbos = sum(unique(subset(coverage.base, intervention.id %in% jumbo.ids & !intervention.id %in% jumbo.budget.outliers & currently.in.force == 'Yes',
+                                             select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+#World exports covered by the jumbos that are not single sector 
+#and where the budget is too small (see above.)
+trade.non.outlier.sgl.jumbos = sum(unique(subset(coverage.base, intervention.id %in% non.sgl.sect.jumbo & !intervention.id %in% jumbo.budget.outliers &currently.in.force == 'Yes',
+                                                 select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+trade.affected = data.frame(trade.jumbos = trade.jumbos, 
+                            trade.non.sgl.jumbos = trade.non.sgl.jumbos, 
+                            trade.non.outlier.jumbos = trade.non.outlier.jumbos,
+                            trade.non.outlier.sgl.jumbos = trade.non.outlier.sgl.jumbos)
+names(trade.affected) = c('Exports covered by jumbos', 
+                          'Exports covered by jumbos affecting more than one sector',
+                          'Exports covered without jumbos of budget lower than 1% of trade affected', 
+                          'Exports covered without jumbos of budget lower than 1% of trade affected and with jumbos affecting more than one sector')
+xlsx::write.xlsx(trade.affected, row.names=F, sheetName = "Exports Affected",file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Exports affected by non-single sector and without outlier jumbos.xlsx",sep=''))

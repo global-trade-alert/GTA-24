@@ -5,6 +5,7 @@ library(ggplot2)
 library(openxlsx)
 library(RColorBrewer)
 library(dplyr)
+library(splitstackshape)
 
 #setwd("C:/Users/jfrit/Desktop/Dropbox/GTA cloud")
 #setwd("C:/Users/Piotr Lukaszuk/Dropbox/GTA cloud")
@@ -30,6 +31,8 @@ approach = 'conservative'
 ec.revoked.gsp.ids = unique(subset(master, state.act.id == '30038')$intervention.id)
 # indian export incentive 2.3 trillion 
 false.jumbos = c(70350, 18891, 16819, 71578, 58794, 18254, 13633, 15366, 13512, 18892) 
+
+remove.ids = c(ec.revoked.gsp.ids,false.jumbos)
 # coverage by intervention computations -----------------------------------
 
 ## importing trade data
@@ -84,6 +87,10 @@ ids.all=unique(master.sliced$intervention.id)
 ids.conservative=unique(subset(master.sliced, implementation.level %in% c("national", "supranational") &
                                           eligible.firms %in% c("all", "sector-specific"))$intervention.id)
 
+
+trade.jumbo.intervention = subset(trade.coverage.base, trade.value >= jumbo.threshold.1 & intervention.id %in% ids.conservative)
+jumbo.ids = unique(trade.jumbo.intervention$intervention.id)
+save(jumbo.ids, trade.jumbo.intervention, file = paste0("0 report production/GTA 24/data/", output.path,"/trade per jumbo(10bn) intervention.Rdata"))
 ### XLSX specs
 year.range = 2008:2019
 
@@ -262,6 +269,9 @@ color.values = c(gta_colour$qualitative[2:1])
 
 if (approach == 'conservative'){annual.jumbos.over.200b = aggregate(intervention.id ~ year.implemented, subset(loop.data, trade.value>=200e9), function(x) length(unique(x)))}
 if (approach == 'conservative'){annual.jumbos.over.500b = aggregate(intervention.id ~ year.implemented, subset(loop.data, trade.value>=500e9), function(x) length(unique(x)))}
+if (approach == 'conservative'){annual.jumbos.over.200b.ids = subset(loop.data, trade.value>=200e9 & !intervention.id %in% false.jumbos)$intervention.id}
+if (approach == 'conservative'){annual.jumbos.over.500b.ids = subset(loop.data, trade.value>=500e9 & !intervention.id %in% false.jumbos)$intervention.id}
+
 
 fig.1 =ggplot(annual.jumbos, aes(x=year.implemented,y=intervention.id,fill=intervention.status)) + geom_col() + 
   scale_x_continuous(breaks=2008:2019,labels=2008:2019) + xlab('Year of implementation of the harmful intervention') +
@@ -288,10 +298,14 @@ names(annual.jumbos.over.200b) = c('year.implemented','number.of.interventions')
 names(annual.jumbos.over.500b) = c('year.implemented','number.of.interventions')
 annual.jumbos.over.200b = rbind(annual.jumbos.over.200b,data.frame(year.implemented = 'all',number.of.interventions = sum(annual.jumbos.over.200b$number.of.interventions)))
 annual.jumbos.over.500b = rbind(annual.jumbos.over.500b,data.frame(year.implemented = 'all',number.of.interventions = sum(annual.jumbos.over.500b$number.of.interventions)))
-
+annual.jumbos.over.200b.ids = data.frame(annual.jumbos.over.200b.ids = annual.jumbos.over.200b.ids)
+annual.jumbos.over.500b.ids = data.frame(annual.jumbos.over.500b.ids = annual.jumbos.over.500b.ids)
+annual.jumbos.over.500b.ids$url = paste0("https://www.globaltradealert.org/intervention/", annual.jumbos.over.500b.ids$annual.jumbos.over.500b.ids)
 ## NOT IN FINAL REPORT
-# xlsx::write.xlsx(annual.jumbos.over.200b, row.names=F, file=paste0('0 report production/GTA 24/tables & figures/',output.path,'/annual jumbos over 200b.xlsx'))
-# xlsx::write.xlsx(annual.jumbos.over.500b, row.names=F, file=paste0('0 report production/GTA 24/tables & figures/',output.path,'/annual jumbos over 500b.xlsx'))
+# xlsx::write.xlsx(annual.jumbos.over.200b, row.names=F, file=paste0('0 report production/GTA 24/tables & figures/',output.path,'/archive/annual jumbos over 200b.xlsx'))
+# xlsx::write.xlsx(annual.jumbos.over.200b.ids, row.names=F, file=paste0('0 report production/GTA 24/tables & figures/ppt/ids annual jumbos over 200b.xlsx'))
+# xlsx::write.xlsx(annual.jumbos.over.500b, row.names=F, file=paste0('0 report production/GTA 24/tables & figures/',output.path,'/archive/annual jumbos over 500b.xlsx'))
+# xlsx::write.xlsx(annual.jumbos.over.500b.ids, row.names=F, file=paste0('0 report production/GTA 24/tables & figures/ppt/ids annual jumbos over 500b.xlsx'))
 
 
 # Task 2 ------------------------------------------------------------------
@@ -440,24 +454,26 @@ approach="conservative"
 
 # SE request: Please compute the number of jumbo protectionist measures that affect only one trading partner.
 
+conservative.trade.coverage.base=subset(trade.coverage.base, intervention.id %in% ids.conservative)
+  
 gta_data_slicer(gta.evaluation=c('Red','Amber'),
                 keep.implementation.na=F,
                 nr.affected=c(1,1)
                 )
+  
 master.sliced = subset(master.sliced, eligible.firms %in% c('all','sector-specific'))
 
 
 master.sliced=master.sliced[!is.na(master.sliced$affected.jurisdiction),]
 unique.affected.partner.interventions = unique(master.sliced$intervention.id)
 
-unique.affected.partner.jumbo = trade.coverage.base[trade.coverage.base$intervention.id %in% unique.affected.partner.interventions,]
+unique.affected.partner.jumbo = conservative.trade.coverage.base[conservative.trade.coverage.base$intervention.id %in% unique.affected.partner.interventions,]
 
 total.unique.affected.partner.jumbo = data.frame(thresholds = c('10b','100b'), 
                                                  'Number of remaining protectionist interventions affecting one partner' = 
                                                    c(length(which(unique.affected.partner.jumbo$trade.value > jumbo.threshold.1 & unique.affected.partner.jumbo$trade.value <= jumbo.threshold.2)),
                                                      length(which(unique.affected.partner.jumbo$trade.value > jumbo.threshold.2))))  
 
-  
 xlsx::write.xlsx(total.unique.affected.partner.jumbo, row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/",chapter.number,".3 Number of jumbo protectionist interventions affecting one trading partner.xlsx",sep=''))
 
 
@@ -498,8 +514,11 @@ names(trade.coverage.base.10b.threshold) = c('Intervention ID','Implementing Jur
 # xlsx::write.xlsx(trade.coverage.base.10b.threshold, row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/",chapter.number,".4 Table of (10b threshold) jumbo protectionist measures.xlsx",sep=''))
 
 
+# identify jumbo ids  -----------------------------------------------------
+
 conservative.jumbo.threshold.1.ids  = unique(subset(conservative.trade.coverage.base,trade.value>jumbo.threshold.1)$intervention.id)
 conservative.jumbo.threshold.2.ids  = unique(subset(conservative.trade.coverage.base,trade.value>jumbo.threshold.2)$intervention.id)
+
 # number computations for text --------------------------------------------
 
 gta_data_slicer(gta.evaluation = c("red","amber"),
@@ -527,28 +546,65 @@ coverage.base=merge(coverage.base, aggregate(trade.value ~ intervention.id+i.un+
 coverage.base$found.trade[is.na(coverage.base$trade.value)]=F
 coverage.base$trade.value[is.na(coverage.base$trade.value)]=0
 
-coverage.base = subset(coverage.base, found.trade==T)
+coverage.base = subset(coverage.base, found.trade==T & !intervention.id %in% false.jumbos)
+save(coverage.base, file = paste0("0 report production/GTA 24/data/", output.path,"/coverage base.Rdata"))
+
+load(paste0("0 report production/GTA 24/data/", output.path,"/coverage base.Rdata"))
+
+data.path = paste(chapter.number, chapter.title, sep=' - ')
+load(paste0("0 report production/GTA 24/data/",data.path,"/conservative jumbos 10bn.Rdata"))
+
 
 # removal jumbo measures (threshold 10b)
-removal.df = data.frame(removal.jumbo.10b = sum(unique(subset(coverage.base, intervention.id %in% conservative.jumbo.threshold.1.ids, select=c('i.un','a.un','affected.product','trade.value')))$trade.value))
+removal.df = data.frame(ten.yr.removal.jumbo.10b = sum(unique(subset(coverage.base, intervention.id %in% conservative.jumbo.threshold.1.ids, select=c('i.un','a.un','affected.product','trade.value')))$trade.value))
+removal.df$in.f.removal.jumbo.10b = sum(unique(subset(coverage.base, intervention.id %in% conservative.jumbo.threshold.1.ids & currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+
 # removal jumbo measures (threshold 100b)
-removal.df$removal.jumbo.100b = sum(unique(subset(coverage.base, intervention.id %in% conservative.jumbo.threshold.2.ids, select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
-# removal P7
-removal.df$removal.P7 = sum(unique(subset(coverage.base, mast.id == 'P7', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
-# removal P8
-removal.df$removal.P8 = sum(unique(subset(coverage.base, mast.id == 'P8', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
-# removal P7&P8
-removal.df$removal.P7.P8 = sum(unique(subset(coverage.base, mast.id %in% c('P7','P8'), select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$all.removal.jumbo.100b = sum(unique(subset(coverage.base, intervention.id %in% conservative.jumbo.threshold.2.ids, select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$in.f.removal.jumbo.100b = sum(unique(subset(coverage.base, intervention.id %in% conservative.jumbo.threshold.2.ids & currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+
+# removal export incentives
+removal.df$all.removal.P7.P8 = sum(unique(subset(coverage.base, mast.id %in% c('P7','P8'), select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$in.f.removal.P7.P8 = sum(unique(subset(coverage.base, mast.id %in% c('P7','P8') & currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+
 # removal L
-removal.df$removal.L = sum(unique(subset(coverage.base, mast.id == 'L', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$all.removal.L = sum(unique(subset(coverage.base, mast.id == 'L', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$in.f.removal.L = sum(unique(subset(coverage.base, mast.id == 'L'& currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+
 # removal TARIFF
-removal.df$removal.TARIFF = sum(unique(subset(coverage.base, mast.id == 'TARIFF', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$all.removal.TARIFF = sum(unique(subset(coverage.base, mast.id == 'TARIFF', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$in.f.removal.TARIFF = sum(unique(subset(coverage.base, mast.id == 'TARIFF'& currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+
 # removal p7 & p8 & L & tariff
-removal.df$removal.p7.p8.L.TARIFF = sum(unique(subset(coverage.base, mast.id %in% c('P7','P8','L','TARIFF'), select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$all.removal.p7.p8.L.TARIFF = sum(unique(subset(coverage.base, mast.id %in% c('P7','P8','L','TARIFF'), select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+removal.df$in.f.removal.p7.p8.L.TARIFF = sum(unique(subset(coverage.base, mast.id %in% c('P7','P8','L','TARIFF') & currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
 
 ## NOT IN FINAL REPORT
 # xlsx::write.xlsx(removal.df, row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Table trade affected with removal Jumbo p7 p8 L TARIFF.xlsx",sep=''))
 
 
+# removal mast chapters ---------------------------------------------------
 
+coverage.base$mast.chapter = plyr::mapvalues(coverage.base$mast.id, as.character(gtalibrary::int.mast.types$mast.subchapter.id), as.character(gtalibrary::int.mast.types$mast.chapter.id))
+
+removal.in.force.mast.chapters = data.frame()
+for (mast in unique(gtalibrary::int.mast.types$mast.chapter.id)){
+  temp = sum(unique(subset(coverage.base, mast.chapter == mast & currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value)
+
+  removal.in.force.mast.chapters = rbind(removal.in.force.mast.chapters, 
+                                          data.frame(mast.chapter = mast,
+                                                     trade.affected = temp))
+}
+
+## NOT IN FINAL REPORT
+# xlsx::write.xlsx(removal.in.force.mast.chapters, row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Table trade affected with removal mast chapter.xlsx",sep=''))
+
+
+# removal all in force interventions --------------------------------------
+
+removal.in.force.interventions = data.frame(
+  in.force.interventions.removed = sum(unique(subset(coverage.base, currently.in.force == 'Yes', select=c('i.un','a.un','affected.product','trade.value')))$trade.value))
+
+## NOT IN FINAL REPORT
+# xlsx::write.xlsx(removal.in.force.interventions, row.names=F, file = paste("0 report production/GTA 24/tables & figures/",output.path,"/Table trade affected with removal in force interventions.xlsx",sep=''))
 
