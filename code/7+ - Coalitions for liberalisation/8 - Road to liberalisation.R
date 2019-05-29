@@ -16,8 +16,9 @@ setwd("C:/Users/jfrit/Desktop/Dropbox/GTA cloud")
 ## general settings
 incl.agriculture=F
 incl.ets=F
-
-
+nr.sectors=10 #length(unique(sectoral.imports$cpc))
+ict.hack=T
+transport.hack=T
 
 chapter.number = 8
 chapter.title = 'Road to liberalisation'
@@ -61,8 +62,7 @@ sectoral.imports=merge(sectoral.imports, cpc.shorts[,c("cpc","cpc.short")])
 sectoral.imports$cpc.short=gsub("\\\\n"," ",sectoral.imports$cpc.short)
 sectoral.imports=sectoral.imports[,c(1,4,2,3)]
 
-####### CHOOSE SPECIFICATION
-nr.sectors=length(unique(sectoral.imports$cpc))
+
 
 
 ## Road to liberalisation
@@ -142,13 +142,20 @@ names(conversion)=c("iso","i.un")
 ## plotting
 serious.margin=.03
 
-for(i.weight in c(-.5,-.25)){
+# For weight -.5
+for(i.weight in c(-.5)){
   c.id=unique(subset(coalition.stats, sector.scope %in% cpc2.20$sector.scope & import.utility.weight==i.weight)$coalition.id)
+  
+  if(transport.hack){
+    c.id[c.id==642]=641
+    c.id=c.id[c.id!=285 ]
+  }
+  
   road.plot=subset(coalition.members, coalition.id %in% c.id & type!="bystander")
   
   road.plot=merge(road.plot, unique(coalition.stats[,c("coalition.id","sector.scope")]), by="coalition.id")
   setnames(road.plot, "sector.scope","cpc")
-  
+  road.plot$cpc=as.numeric(as.character(road.plot$cpc))
   road.plot=merge(road.plot, sectoral.world.market.share[,c("i.un", "cpc","share")], by=c("i.un", "cpc"), all.x=T)
   road.plot$share[is.na(road.plot$share)]=0
   
@@ -283,7 +290,158 @@ for(i.weight in c(-.5,-.25)){
   
   gta_plot_saver(plot = plot,
                  path = output.path,
-                 name = paste0("Figure ", chapter.number, ".1 - Critical coalition members - ",nr.sectors," sectors - IW ",i.weight))
+                 name = paste0("Figure ", chapter.number, ".1 - Critical coalition members - (Non-)Agreements at import aversion ",i.weight))
+  
+  
+}
+
+
+## For weight -.25
+for(i.weight in c(-.25)){
+  c.id=unique(subset(coalition.stats, sector.scope %in% cpc2.20$sector.scope & import.utility.weight==i.weight)$coalition.id)
+  if(ict.hack){
+  c.id[c.id==616]=615  
+  }
+  road.plot=subset(coalition.members, coalition.id %in% c.id & type!="bystander")
+  
+  road.plot=merge(road.plot, unique(coalition.stats[,c("coalition.id","sector.scope")]), by="coalition.id")
+  setnames(road.plot, "sector.scope","cpc")
+  road.plot$cpc=as.numeric(as.character(road.plot$cpc))
+  road.plot=merge(road.plot, sectoral.world.market.share[,c("i.un", "cpc","share")], by=c("i.un", "cpc"), all.x=T)
+  road.plot$share[is.na(road.plot$share)]=0
+  
+  if(nrow(subset(road.plot, type=="member"))>0){
+    other.in=merge(aggregate(net.gain ~ cpc + coalition.id + type, subset(road.plot, type=="member" & share<serious.margin), sum),
+                   aggregate(share ~ cpc + coalition.id + type, subset(road.plot, type=="member" & share<serious.margin), sum),
+                   by=c("cpc","coalition.id","type"))
+    other.in$i.un="1001"
+    
+    road.plot=rbind(subset(road.plot, (share>=serious.margin & type=="member")|type!="member"),
+                    other.in)
+    
+  }
+  
+  if(nrow(subset(road.plot, type=="freerider"))>0){
+    
+    other.out=merge(aggregate(net.gain ~ cpc + coalition.id + type, subset(road.plot, type=="freerider" & share<serious.margin), sum),
+                    aggregate(share ~ cpc + coalition.id + type, subset(road.plot, type=="freerider" & share<serious.margin), sum),
+                    by=c("cpc","coalition.id","type"))
+    other.out$i.un="1002"
+    
+    
+    road.plot=rbind(subset(road.plot, (share>=serious.margin & type=="freerider")|type!="freerider"),
+                    other.out)
+    
+    
+  }
+  
+  
+  
+  
+  
+  road.plot=merge(road.plot, conversion, by="i.un", all.x=T)
+  road.plot$iso[road.plot$i.un=="10007"]="EU"
+  road.plot$iso[road.plot$i.un=="10008"]="EEU"
+  road.plot$iso[road.plot$i.un=="1001"]="min"
+  road.plot$iso[road.plot$i.un=="1002"]="min"
+  
+  road.plot$intensity=NA
+  road.plot$position=NA
+  for(i in unique(road.plot$coalition.id)){
+    if(sum(subset(road.plot, coalition.id==i)$share)<1){
+      road.plot=rbind(road.plot,
+                      data.frame(i.un=1003,
+                                 cpc=unique(subset(road.plot, coalition.id==i)$cpc),
+                                 net.gain=0,
+                                 coalition.id=i,
+                                 type="bystander",
+                                 share=1-sum(subset(road.plot, coalition.id==i)$share),
+                                 iso="bys",
+                                 intensity=NA,
+                                 position=NA))
+    }
+    
+    road.plot$intensity[road.plot$coalition.id==i]=road.plot$net.gain[road.plot$coalition.id==i]/max(abs(road.plot$net.gain[road.plot$coalition.id==i]))
+    
+    cumul=subset(road.plot, coalition.id==i)
+    cumul=cumul[order(-cumul$intensity),]
+    cumul$position[1]=cumul$share[1]/2
+    for(j in 2:nrow(cumul)){
+      cumul$position[j]=cumul$share[j]/2+sum(cumul$share[1:(j-1)])
+    }
+    
+    road.plot=rbind(subset(road.plot, coalition.id!=i), cumul)
+    
+  }
+  
+  setnames(cpc.shorts, "sector.scope","cpc")
+  road.plot=merge(road.plot, cpc.shorts[,c("cpc","cpc.short")], by="cpc", all.x=T)
+  road.plot$cpc.short=gsub("\\\\n"," ",road.plot$cpc.short)
+  setnames(cpc.shorts, new="sector.scope","cpc")
+  
+  setnames(sectoral.imports, "share","sec.size")
+  road.plot=merge(road.plot, sectoral.imports[,c("cpc","sec.size")], by="cpc", all.x=T)
+  setnames(sectoral.imports,"sec.size", "share")
+  
+  road.plot$cpc.short =factor(road.plot$cpc.short, levels=unique(road.plot$cpc.short)[order(unique(road.plot$sec.size))])
+  
+  road.plot=road.plot[order(-road.plot$net.gain),]
+  
+  if(min(road.plot$intensity)<0){
+    
+    plot=ggplot()+
+      geom_bar(data=road.plot, 
+               aes(x=cpc.short, y=share, fill=intensity),
+               colour="#848484", 
+               stat = "identity", width=.8)+
+      geom_text(data=road.plot, 
+                aes(x= as.factor(cpc.short), y = position, label = iso, family=""), 
+                size = 2, colour="black", nudge_x = .1) +
+      scale_fill_gradientn(colours = c(gta_colour$harmful[1], "#ececec", gta_colour$liberalising[1]),
+                           breaks=c(-1,0,1),
+                           na.value="white",
+                           name="favorability\ntowards\nagreement")+
+      scale_y_continuous(breaks=seq(0,1,.2))+
+      coord_flip()+
+      geom_hline(yintercept = .8, linetype="dashed")+
+      gta_theme()+
+      labs(x="", y="Cumulative world trade share of given sector")+
+      theme(panel.background = element_blank(), 
+            panel.border=element_rect(size=1, colour="grey",fill = "transparent"), 
+            legend.position="bottom",
+            axis.text.x.bottom = element_text(hjust = 0.5))
+  } else {
+    
+    plot=ggplot()+
+      geom_bar(data=road.plot, 
+               aes(x=cpc.short, y=share, fill=intensity),
+               colour="#848484", 
+               stat = "identity", width=.8)+
+      geom_text(data=road.plot, 
+                aes(x= as.factor(cpc.short), y = position, label = iso, family=""), 
+                size = 2, colour="black", nudge_x = .1) +
+      scale_fill_gradient(low="#ececec", 
+                          high=gta_colour$liberalising[1],
+                          na.value="white",
+                          name="favorability\ntowards\nagreement",
+                          breaks=c(0,1))+
+      scale_y_continuous(breaks=seq(0,1,.2))+
+      coord_flip()+
+      geom_hline(yintercept = .8, linetype="dashed")+
+      gta_theme()+
+      labs(x="", y="Cumulative world trade share of given sector")+
+      theme(panel.background = element_blank(), 
+            panel.border=element_rect(size=1, colour="grey",fill = "transparent"), 
+            legend.position="bottom",
+            axis.text.x.bottom = element_text(hjust = 0.5))
+  }
+  
+  
+  plot
+  
+  gta_plot_saver(plot = plot,
+                 path = output.path,
+                 name = paste0("Figure ", chapter.number, ".2 - Critical coalition members - Top ",nr.sectors," sectors - IW ",i.weight))
   
   
 }
