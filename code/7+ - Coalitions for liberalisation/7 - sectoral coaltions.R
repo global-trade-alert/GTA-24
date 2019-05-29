@@ -417,24 +417,30 @@ gta_plot_saver(plot = plot,
 eu.members=country.names$un_code[country.names$is.eu==T]
 eeu.members=country.names$un_code[country.names$is.eeu==T]
 
-my.sectors=c("General-purpose machinery","Pulp, paper & printing products", "Metal ores")
+my.sectors=c("Special-purpose machinery")
+coalition.stats$sector.scope=as.numeric(as.character(coalition.stats$sector.scope))
+coalition.members$type=as.character(coalition.members$type)
+
+iw.map=-.5
 
 for(sec in my.sectors){
-  members=subset(coalition.members, coalition.id == subset(coalition.stats, 
-                                                           import.utility.weight==-.25 &
-                                                             sector.name==sec)$coalition.id)[,c("i.un","type")]
+  c.code=cpc.shorts$sector.scope[gsub("\\\\n"," ",cpc.shorts$cpc.short)==sec]
+  map.id=subset(coalition.stats, 
+                import.utility.weight==iw.map &
+                  sector.scope==c.code)$coalition.id
+  members=subset(coalition.members, coalition.id == map.id)[,c("i.un","type")]
   
   world <- gtalibrary::world.geo
   names(members)=c("UN", "value")
   
   if(10007 %in% members$UN){
-    members=rbind(members,
+    members=rbind(subset(members, UN!=10007),
                   data.frame(UN=eu.members,
                              value=members$value[members$UN==10007]))
   }
   
   if(10008 %in%  members$UN){
-    members=rbind(members,
+    members=rbind(subset(members, UN!=10008),
                   data.frame(UN=eeu.members,
                              value=members$value[members$UN==10008]))
   }
@@ -444,7 +450,7 @@ for(sec in my.sectors){
   
   ###### IMPORTANT, sort for X (id) again
   world <-  world[with(world, order(X)),]
-  world$value[is.na(world$value) == T] <- "no exports"
+  world$value[is.na(world$value) == T] <- "no exports or\nnot a WTO member"
   
   
   
@@ -484,7 +490,23 @@ for(sec in my.sectors){
                  width = 21,
                  height = 12)
   
+  ## xlsx
+  map.stats=subset(coalition.stats, coalition.id==map.id)[,c("sector.scope","sector.name","import.utility.weight",
+                                                             "member.size","members.liberalising","freerider.count","bystander.count",
+                                                             "coalition.total.trade","coalition.liberalised.trade", 
+                                                             "intra.coalition.liberalised.trade", "share.world.imports" ,
+                                                             "share.world.imports.liberalised")]
   
+  map.stats$sector.name=sec
+  names(map.stats)=c("CPC sector (2-digit)","Sector name",
+                     "Import aversion parameter","Number of members",
+                     "Number of members liberalising","Number of freeriders","Number of bystanders",
+                     "Total sectoral imports of coalition","Total liberalised sectoral imports of coalition",
+                     "Total intra-coalition liberalised sectoral imports","Coalition share of sectoral world imports",
+                     "Liberalised share of sectoral world imports")
+  
+  xlsx::write.xlsx(map.stats, file=paste(output.path,"/Figure ", chapter.number, ".3 - Agreement map - ",sec," - summary stats.xlsx",sep=""), row.names = F)
+
 }
 
 
