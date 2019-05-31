@@ -375,8 +375,6 @@ load("0 report production/GTA 24/data/9 - Gains from horse trade/gfht.Rdata")
 
 
 
-
-
 ## overview plot: economic mass
 my.weights=c(0,-.25, -.4,-.5)
 horse.overview=
@@ -470,14 +468,12 @@ gta_plot_saver(plot=critical.mass,
 cm.threshold=.8
 focus.coalition=subset(gains.from.horse.trade, abs.gain>0 &
                          coalition.id %in% subset(cs.multi, share.world.imports>=cm.threshold)$coalition.id)
-focus.coalition=merge(focus.coalition, cs.multi[,c(1,6:14)], by=c("coalition.id"), all.x=T)
+focus.coalition=merge(focus.coalition, cs.multi[,c(1,7:15)], by=c("coalition.id"), all.x=T)
 
 focus.coalition$two.sector=NA
 for(i in 1:nrow(focus.coalition)){
   focus.coalition$two.sector[i]=length(unlist(str_extract_all(as.character(focus.coalition$sector.scope[i]),",")))==1
 }
-
-e=subset(focus.coalition, import.utility.weight==-.25 & two.sector==T)
 
 focus.largest.50=75
 focus.largest.50.2s=19752
@@ -486,7 +482,24 @@ focus.largest.50.2s=19752
 focus.largest.25=7
 focus.largest.25.2s=18592
 
-for(focus.id in c(focus.largest.50, focus.largest.50.2s, focus.largest.25, focus.largest.25.2s)){
+## looking for african member counts
+au=country.correspondence$un_code[country.correspondence$name=="African Union"]
+
+cm.multi$is.africa=as.numeric(cm.multi$i.un %in% au)
+incl.africa=aggregate(is.africa ~  coalition.id, subset(cm.multi, type=="member"),sum)
+
+focus.coalition=merge(focus.coalition, incl.africa, by="coalition.id", all.x=T)
+
+e=subset(focus.coalition, import.utility.weight==-.5 & two.sector==F)
+
+s.4349=subset(focus.coalition, grepl("43", sector.scope) & 
+                grepl("49", sector.scope) & 
+                str_count(sector.scope,",")<=2 &
+                import.utility.weight %in% c(-.4,-.45,-.5))
+
+focus.largest.50.3s=16539
+
+for(focus.id in c(focus.largest.50.3s)){
   
   focus.scope=as.character(focus.coalition$sector.scope[focus.coalition$coalition.id==focus.id])
   iuw=focus.coalition$import.utility.weight[focus.coalition$coalition.id==focus.id]
@@ -657,3 +670,39 @@ for(focus.id in c(focus.largest.50, focus.largest.50.2s, focus.largest.25, focus
   
   
 }
+
+## 9.4
+focus.coalition$sec.count=str_count(focus.coalition$sector.scope, ",")+1
+big4=c(10007,840,156,392)
+big4.in=as.data.frame(table(subset(cm.multi, i.un %in% big4 & type=="member")$coalition.id))
+
+big4.in$all.in=big4.in$Freq==4
+names(big4.in)=c("coalition.id","nr.of.4","all.4.in")
+focus.coalition=merge(focus.coalition, big4.in, by="coalition.id", all.x=T)
+
+focus.coalition$share.lib.intra=focus.coalition$intra.coalition.liberalised.trade/focus.coalition$coalition.liberalised.trade
+
+plot=
+  ggplot(subset(focus.coalition, sec.count>=3 & import.utility.weight<=-.5), aes(x=coalition.liberalised.trade/1000000000, y=share.lib.intra, size=sec.count))+
+  geom_point(color=gta_colour$blue[1])+
+  gta_theme()+
+  labs(x="Trade benefitting from removal of crisis-era discrimination\nin USD billion", y="Share of total benefitting trade\ninside the coalition members",
+       size="Number of\nsectors")+
+  theme(panel.background = element_blank(), 
+        panel.border=element_rect(size=1, colour="grey",fill = "transparent"), 
+        legend.position="bottom",
+        axis.text.x.bottom = element_text(hjust = 0.5))
+
+
+
+plot
+
+gta_plot_saver(plot = plot,
+               path = output.path,
+               name = paste0("Figure ", chapter.number, ".4 - Agreement size & liberalised trade")
+               )
+
+
+
+
+
