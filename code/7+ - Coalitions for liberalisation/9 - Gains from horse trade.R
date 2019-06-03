@@ -655,6 +655,15 @@ for(focus.id in largest.version){
     
   }
   
+  if(length(map.labels)==2){
+    map.labels=c("Non-member", "Member")
+    map.legend.title="Membership status"
+  } else {
+    
+    map.legend.title="Change in the\nnumber of sectors\ncovered by the\nmulti-sectoral\nagreement"
+  }
+  
+  
  map1=
   ggplot() +
     geom_polygon(data= subset(world, country != "Antarctica"), 
@@ -682,7 +691,7 @@ for(focus.id in largest.version){
           legend.text = element_text(family="", colour = "#333333", size = 11*0.8, angle = 0, hjust=0, vjust=0, margin = margin(r=10)),
           legend.text.align = 0
     ) +
-    guides(fill=guide_legend(title=paste("Change in the\nnumber of sectors\ncovered by the\nmulti-sectoral\nagreement", sep=""), label.position = "top"),
+    guides(fill=guide_legend(title=map.legend.title, label.position = "top"),
            ymax=guide_legend(title="size"))
   
   
@@ -745,7 +754,7 @@ plot
 
 gta_plot_saver(plot = plot,
                path = output.path,
-               name = paste0("Figure ", chapter.number, ".7 - Agreement size & liberalised trade")
+               name = paste0("Figure ", chapter.number, ".6 - Agreement size & liberalised trade")
                )
 
 
