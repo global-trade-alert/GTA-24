@@ -611,110 +611,80 @@ for(focus.id in largest.version){
   
   
   map.breaks=unique(world$value)[order(unique(world$value))]
+  values.lost=map.breaks[map.breaks<0]
+  values.won=map.breaks[map.breaks>0]
   
   if(min.w>=0){
     
     if(has.full.participation){
       
       map.colours=c("#dadada",
-                    gta_colour$green.shades(length(seq(1,max.w-1,1)))[length(seq(1,max.w-1,1)):1],
+                    gta_colour$green.shades(length(values.won))[length(values.won):1],
                     gta_colour$blue[1])
-      map.labels=c("full absence",seq(1,max.w-1,1), "full participation\nin both scenarios")
+      map.labels=c("full absence",values.won, "full participation\nin both scenarios")
       
     } else {
       
       map.colours=c("#dadada",
-                    gta_colour$green.shades(length(seq(1,max.w,1)))[length(seq(1,max.w,1)):1])
-      map.labels=c("full absence",seq(1,max.w,1))
+                    gta_colour$green.shades(length(values.won))[length(values.won):1])
+      map.labels=c("full absence",values.won)
       
     }
-    
-
-    map1
-      ggplot() +
-      geom_polygon(data= subset(world, country != "Antarctica"), 
-                   aes(x = long, y = lat, group = group, fill = value), size = 0.15, color = "white") +
-      geom_polygon(data=subset(world, country == "Greenland"), aes(x=long, y=lat, group = group), fill="#dadada", size = 0.15, colour = "white") +
-      coord_fixed() + # Important to fix world map proportions
-      scale_y_continuous(limits=c(-55,85))+
-      scale_x_continuous(limits=c(-169,191))+
-      labs(x="", y="") +
-      scale_fill_gradientn(colours = map.colours, 
-                           
-                           breaks=c(seq(min.w,max.w,1)), 
-                           position="bottom", 
-                           labels=map.labels) + # Set color gradient
-      theme(axis.title.x=element_blank(),
-            axis.text.x=element_blank(),
-            axis.ticks.x=element_blank(),
-            axis.title.y=element_blank(),
-            axis.text.y=element_blank(),
-            axis.ticks.y=element_blank(),
-            panel.background = element_blank(),
-            legend.position = "bottom",
-            plot.title = element_text(family = "", colour = "#333333", size = 11, hjust = 0.5, margin = margin(b=10)),
-            legend.title = element_text(vjust= 0.3, family="", colour = "#333333", size = 11*0.8, margin = margin(r=10)),
-            legend.text = element_text(family="", colour = "#333333", size = 11*0.8, angle = 0, hjust=0, vjust=0, margin = margin(r=10)),
-            legend.text.align = 0
-      ) +
-      guides(fill=guide_legend(title=paste("Change in the\nnumber of sectors\ncovered by the agreement", sep=""), label.position = "top"),
-             ymax=guide_legend(title="size"))
-    
     
   }else{
     
     if(has.full.participation){
       
-      map.colours=c(gta_colour$red.shades(length(seq(min.w,-1,1))),
+      map.colours=c(gta_colour$red.shades(length(values.lost)),
                     "#dadada",
-                    gta_colour$green.shades(length(seq(1,max.w-1,1)))[length(seq(1,max.w-1,1)):1],
+                    gta_colour$green.shades(length(values.won))[length(values.won):1],
                     gta_colour$blue[1])
       
-      map.labels=c(seq(min.w,-1,1),"full absence",seq(1,max.w-1,1), "full participation\nin both scenarios")
+      map.labels=c(values.lost, "full absence",values.won, "full participation\nin both scenarios")
       
     } else {
       
-      map.colours=c(gta_colour$red.shades(length(seq(min.w,-1,1))),
+      map.colours=c(gta_colour$red.shades(length(values.lost)),
                     "#dadada",
-                    gta_colour$green.shades(length(seq(1,max.w,1)))[length(seq(1,max.w,1)):1])
-      
-      map.labels=c(seq(min.w,-1,1),"full absence",seq(1,max.w,1))
+                    gta_colour$green.shades(length(values.won))[length(values.won):1])
+      map.labels=c(values.lost, "full absence",values.won)
       
     }
     
 
-    map1=
-      ggplot() +
-      geom_polygon(data= subset(world, country != "Antarctica"), 
-                   aes(x = long, y = lat, group = group, fill = value), size = 0.15, color = "white") +
-      geom_polygon(data=subset(world, country == "Greenland"), aes(x=long, y=lat, group = group), fill="#dadada", size = 0.15, colour = "white") +
-      coord_fixed() + # Important to fix world map proportions
-      scale_y_continuous(limits=c(-55,85))+
-      scale_x_continuous(limits=c(-169,191))+
-      labs(x="", y="") +
-      scale_fill_gradientn(colours = map.colours, 
-                           
-                           breaks=c(seq(min.w,max.w,1)), 
-                           position="bottom", 
-                           labels=map.labels
-                           ) + # Set color gradient
-      theme(axis.title.x=element_blank(),
-            axis.text.x=element_blank(),
-            axis.ticks.x=element_blank(),
-            axis.title.y=element_blank(),
-            axis.text.y=element_blank(),
-            axis.ticks.y=element_blank(),
-            panel.background = element_blank(),
-            legend.position = "bottom",
-            plot.title = element_text(family = "", colour = "#333333", size = 11, hjust = 0.5, margin = margin(b=10)),
-            legend.title = element_text(vjust= 0.3, family="", colour = "#333333", size = 11*0.8, margin = margin(r=10)),
-            legend.text = element_text(family="", colour = "#333333", size = 11*0.8, angle = 0, hjust=0, vjust=0, margin = margin(r=10)),
-            legend.text.align = 0
-      ) +
-      guides(fill=guide_legend(title=paste("Change in the\nnumber of sectors\ncovered by the agreement", sep=""), label.position = "top"),
-             ymax=guide_legend(title="size"))
+   
     
   }
+  
+ map1=
+  ggplot() +
+    geom_polygon(data= subset(world, country != "Antarctica"), 
+                 aes(x = long, y = lat, group = group, fill = as.factor(value)), size = 0.15, color = "white") +
+    geom_polygon(data=subset(world, country == "Greenland"), aes(x=long, y=lat, group = group), fill="#dadada", size = 0.15, colour = "white") +
+    coord_fixed() + # Important to fix world map proportions
+    scale_y_continuous(limits=c(-55,85))+
+    scale_x_continuous(limits=c(-169,191))+
+    labs(x="", y="") +
+    scale_fill_manual(values = map.colours, 
+                      breaks=map.breaks, 
+                      position="bottom", 
+                      labels=map.labels
+    ) + # Set color gradient
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          panel.background = element_blank(),
+          legend.position = "bottom",
+          plot.title = element_text(family = "", colour = "#333333", size = 11, hjust = 0.5, margin = margin(b=10)),
+          legend.title = element_text(vjust= 0.3, family="", colour = "#333333", size = 11*0.8, margin = margin(r=10)),
+          legend.text = element_text(family="", colour = "#333333", size = 11*0.8, angle = 0, hjust=0, vjust=0, margin = margin(r=10)),
+          legend.text.align = 0
+    ) +
+    guides(fill=guide_legend(title=paste("Change in the\nnumber of sectors\ncovered by the\nmulti-sectoral\nagreement", sep=""), label.position = "top"),
+           ymax=guide_legend(title="size"))
   
   
   map1
