@@ -17,6 +17,7 @@ output.path=paste("0 report production/GTA 24/tables & figures/",output.path, se
 incl.agriculture=F
 incl.ets=F
 threshold.share=.8
+single.iuw.different=F
 
 
 ## load top10 simulation
@@ -501,27 +502,48 @@ focus.coalition=merge(focus.coalition, incl.africa, by="coalition.id", all.x=T)
 
 focus.largest.50.3s=16539
 
+e=subset(focus.coalition, import.utility.weight==-.5 & two.sector==F & grepl("44", sector.scope) &
+           str_count(sector.scope,",")>2)
+
+largest.special.machine.2s=21117
+largest.special.machine.3s=20067
+largest.special.machine.manys=75
+
+largest.version=c(focus.largest.50.2s, focus.largest.50.3s)
+
+special.version=c(largest.special.machine.2s,largest.special.machine.3s,largest.special.machine.manys)
+
 fig.dot=4
-for(focus.id in c(focus.largest.50.2s, focus.largest.50.3s)){
+for(focus.id in largest.version){
   
   focus.scope=as.character(focus.coalition$sector.scope[focus.coalition$coalition.id==focus.id])
   iuw=focus.coalition$import.utility.weight[focus.coalition$coalition.id==focus.id]
   
   sec.check=unlist( strsplit(focus.scope,","))
-  single.coalitions=c()
-  for(sc in sec.check){
-    sc.stats=subset(cs.single, sector.scope %in% sc &
-             member.size>0)
-    if(nrow(sc.stats)>0){
-      
-      single.coalitions=c(single.coalitions,sc.stats$coalition.id[sc.stats$import.utility.weight==min(sc.stats$import.utility.weight)])
-      
-    } else {
-      single.coalitions=c(single.coalitions,
-                          subset(cs.single, sector.scope %in% sc &
-                                 import.utility.weight==iuw)$coalition.id)
+  
+  if(single.iuw.different){
+    
+    single.coalitions=c()
+    for(sc in sec.check){
+      sc.stats=subset(cs.single, sector.scope %in% sc &
+                        member.size>0)
+      if(nrow(sc.stats)>0){
+        
+        single.coalitions=c(single.coalitions,sc.stats$coalition.id[sc.stats$import.utility.weight==min(sc.stats$import.utility.weight)])
+        
+      } else {
+        single.coalitions=c(single.coalitions,
+                            subset(cs.single, sector.scope %in% sc &
+                                     import.utility.weight==iuw)$coalition.id)
+      }
     }
+    
+  } else {
+    
+    single.coalitions=subset(cs.single, sector.scope %in% sec.check &
+                               import.utility.weight==iuw)$coalition.id
   }
+  
   
   focus.stats=subset(cs.multi,coalition.id==focus.id)[,c("coalition.id","sector.scope","member.size","coalition.total.trade","coalition.liberalised.trade", "share.world.imports","share.world.imports.liberalised" )]
   focus.stats$type="multi"
@@ -556,8 +578,14 @@ for(focus.id in c(focus.largest.50.2s, focus.largest.50.3s)){
   participation=merge(participation, participation.m[,c("i.un", "member")], by="i.un", all.x=T)
   participation$gain=participation$member.y-participation$member.x
   
-  participation$gain[participation$gain==0 & participation$member.x==participation$member.y & participation$member.x>0]=max(participation$gain)+1
+  pre.max=max(participation$gain, na.rm = T)
+  
+  participation$gain[participation$gain==0 & participation$member.x==max(participation$gain)]=max(participation$gain)+1
   participation=participation[,c("i.un", "gain")]
+  
+  post.max=max(participation$gain, na.rm = T)
+  
+  has.full.participation=post.max>pre.max
   
   participation=rbind(subset(participation, i.un!=10007),
                       data.frame(i.un=country.correspondence$un_code[country.correspondence$name=="EU-28"],
@@ -586,7 +614,23 @@ for(focus.id in c(focus.largest.50.2s, focus.largest.50.3s)){
   
   if(min.w>=0){
     
-    map1=
+    if(has.full.participation){
+      
+      map.colours=c("#dadada",
+                    gta_colour$green.shades(length(seq(1,max.w-1,1)))[length(seq(1,max.w-1,1)):1],
+                    gta_colour$blue[1])
+      map.labels=c("full absence",seq(1,max.w-1,1), "full participation\nin both scenarios")
+      
+    } else {
+      
+      map.colours=c("#dadada",
+                    gta_colour$green.shades(length(seq(1,max.w,1)))[length(seq(1,max.w,1)):1])
+      map.labels=c("full absence",seq(1,max.w,1))
+      
+    }
+    
+
+    map1
       ggplot() +
       geom_polygon(data= subset(world, country != "Antarctica"), 
                    aes(x = long, y = lat, group = group, fill = value), size = 0.15, color = "white") +
@@ -595,13 +639,11 @@ for(focus.id in c(focus.largest.50.2s, focus.largest.50.3s)){
       scale_y_continuous(limits=c(-55,85))+
       scale_x_continuous(limits=c(-169,191))+
       labs(x="", y="") +
-      scale_fill_gradientn(colours = c("#dadada",
-                                       gta_colour$green.shades(length(seq(1,max.w-1,1)))[length(seq(1,max.w-1,1)):1],
-                                       gta_colour$blue[1]), 
+      scale_fill_gradientn(colours = map.colours, 
                            
                            breaks=c(seq(min.w,max.w,1)), 
                            position="bottom", 
-                           labels=c("full absence",seq(1,max.w-1,1), "full participation\nin both scenarios")) + # Set color gradient
+                           labels=map.labels) + # Set color gradient
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
             axis.ticks.x=element_blank(),
@@ -621,6 +663,26 @@ for(focus.id in c(focus.largest.50.2s, focus.largest.50.3s)){
     
   }else{
     
+    if(has.full.participation){
+      
+      map.colours=c(gta_colour$red.shades(length(seq(min.w,-1,1))),
+                    "#dadada",
+                    gta_colour$green.shades(length(seq(1,max.w-1,1)))[length(seq(1,max.w-1,1)):1],
+                    gta_colour$blue[1])
+      
+      map.labels=c(seq(min.w,-1,1),"full absence",seq(1,max.w-1,1), "full participation\nin both scenarios")
+      
+    } else {
+      
+      map.colours=c(gta_colour$red.shades(length(seq(min.w,-1,1))),
+                    "#dadada",
+                    gta_colour$green.shades(length(seq(1,max.w,1)))[length(seq(1,max.w,1)):1])
+      
+      map.labels=c(seq(min.w,-1,1),"full absence",seq(1,max.w,1))
+      
+    }
+    
+
     map1=
       ggplot() +
       geom_polygon(data= subset(world, country != "Antarctica"), 
@@ -630,14 +692,11 @@ for(focus.id in c(focus.largest.50.2s, focus.largest.50.3s)){
       scale_y_continuous(limits=c(-55,85))+
       scale_x_continuous(limits=c(-169,191))+
       labs(x="", y="") +
-      scale_fill_gradientn(colours = c(gta_colour$red.shades(length(seq(min.w,-1,1))),
-                                       "#dadada",
-                                       gta_colour$green.shades(length(seq(1,max.w-1,1)))[length(seq(1,max.w-1,1)):1],
-                                       gta_colour$blue[1]), 
+      scale_fill_gradientn(colours = map.colours, 
                            
                            breaks=c(seq(min.w,max.w,1)), 
                            position="bottom", 
-                           labels=c(seq(min.w,-1,1),"full absence",seq(1,max.w-1,1), "full participation\nin both scenarios")
+                           labels=map.labels
                            ) + # Set color gradient
       theme(axis.title.x=element_blank(),
             axis.text.x=element_blank(),
