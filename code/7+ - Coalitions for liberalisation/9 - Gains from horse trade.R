@@ -363,7 +363,7 @@ xlsx::write.xlsx(max.stats, file=paste(output.path,"/Table ",chapter.number,".1 
 # }
 # 
 # save(gains.from.horse.trade, file="0 report production/GTA 24/data/9 - Gains from horse trade/gfht.Rdata")
-
+# 
 
 
 ## dump
@@ -394,7 +394,7 @@ horse.overview
 
 gta_plot_saver(plot=horse.overview,
                path=output.path,
-               name= paste("Figure ",chapter.number,".1 - Change in liberalised world imports", sep=""))
+               name= paste("Figure ",chapter.number,".2 - Change in liberalised world imports", sep=""))
 
 
 horse.overview=
@@ -419,7 +419,8 @@ gta_plot_saver(plot=horse.overview,
 
 
 ## Critical masses of multi-sector agreements
-mass.multi=subset(cs.multi, coalition.total.trade>0 & coalition.id %in% subset(gains.from.horse.trade, abs.gain>=0)$coalition.id)[,c("coalition.id","sector.scope","share.world.imports")]
+load("0 report production/GTA 24/data/9 - Gains from horse trade/gfht - no threshold.Rdata")
+mass.multi=subset(cs.multi, coalition.total.trade>0 & coalition.id %in% subset(gains.from.horse.trade.no.t, abs.gain>=0)$coalition.id)[,c("coalition.id","sector.scope","share.world.imports")]
 mass.multi$type="multi"
 mass.single=subset(cs.single, coalition.total.trade>0)[,c("coalition.id","sector.scope","share.world.imports")]
 mass.single$type="single"
@@ -446,6 +447,7 @@ critical.mass=
   geom_bar(stat="identity", position = "dodge")+
   scale_fill_manual(values=c(gta_colour$qualitative[c(1,3)]))+
   scale_x_continuous(limits=c(.7,1), breaks=seq(.7,1,.1))+
+  scale_y_continuous(limits=c(0,.6), sec.axis =  dup_axis(name=NULL))+
   labs(x="Share of sectoral world imports",
        y="Share of observed coalitions", 
        fill="Coalition   \nscope")+
@@ -456,7 +458,7 @@ critical.mass
 
 gta_plot_saver(plot=critical.mass,
                path=output.path,
-               name= paste("Figure ",chapter.number,".2 - Critical masses across coaltions scope", sep=""))
+               name= paste("Figure ",chapter.number,".3 - Critical masses across coaltions scope", sep=""))
 
 
 
@@ -490,22 +492,36 @@ incl.africa=aggregate(is.africa ~  coalition.id, subset(cm.multi, type=="member"
 
 focus.coalition=merge(focus.coalition, incl.africa, by="coalition.id", all.x=T)
 
-e=subset(focus.coalition, import.utility.weight==-.5 & two.sector==F)
-
-s.4349=subset(focus.coalition, grepl("43", sector.scope) & 
-                grepl("49", sector.scope) & 
-                str_count(sector.scope,",")<=2 &
-                import.utility.weight %in% c(-.4,-.45,-.5))
+# e=subset(focus.coalition, import.utility.weight==-.5 & two.sector==F)
+# 
+# s.4349=subset(focus.coalition, grepl("43", sector.scope) & 
+#                 grepl("49", sector.scope) & 
+#                 str_count(sector.scope,",")<=2 &
+#                 import.utility.weight %in% c(-.4,-.45,-.5))
 
 focus.largest.50.3s=16539
 
-for(focus.id in c(focus.largest.50.3s)){
+fig.dot=4
+for(focus.id in c(focus.largest.50.2s, focus.largest.50.3s)){
   
   focus.scope=as.character(focus.coalition$sector.scope[focus.coalition$coalition.id==focus.id])
   iuw=focus.coalition$import.utility.weight[focus.coalition$coalition.id==focus.id]
   
-  single.coalitions=subset(cs.single, sector.scope %in% unlist( strsplit(focus.scope,",")) &
-                             import.utility.weight==iuw)$coalition.id
+  sec.check=unlist( strsplit(focus.scope,","))
+  single.coalitions=c()
+  for(sc in sec.check){
+    sc.stats=subset(cs.single, sector.scope %in% sc &
+             member.size>0)
+    if(nrow(sc.stats)>0){
+      
+      single.coalitions=c(single.coalitions,sc.stats$coalition.id[sc.stats$import.utility.weight==min(sc.stats$import.utility.weight)])
+      
+    } else {
+      single.coalitions=c(single.coalitions,
+                          subset(cs.single, sector.scope %in% sc &
+                                 import.utility.weight==iuw)$coalition.id)
+    }
+  }
   
   focus.stats=subset(cs.multi,coalition.id==focus.id)[,c("coalition.id","sector.scope","member.size","coalition.total.trade","coalition.liberalised.trade", "share.world.imports","share.world.imports.liberalised" )]
   focus.stats$type="multi"
@@ -540,7 +556,7 @@ for(focus.id in c(focus.largest.50.3s)){
   participation=merge(participation, participation.m[,c("i.un", "member")], by="i.un", all.x=T)
   participation$gain=participation$member.y-participation$member.x
   
-  participation$gain[participation$gain==0 & participation$member.x==participation$member.y]=max(participation$gain)+1
+  participation$gain[participation$gain==0 & participation$member.x==participation$member.y & participation$member.x>0]=max(participation$gain)+1
   participation=participation[,c("i.un", "gain")]
   
   participation=rbind(subset(participation, i.un!=10007),
@@ -646,7 +662,7 @@ for(focus.id in c(focus.largest.50.3s)){
   
   gta_plot_saver(plot=map1,
                  path=output.path,
-                 name=paste("Figure ", chapter.number, ".3 - Focus agreement - IW ",iuw," - sectors ",focus.scope," - participation map", sep=""),
+                 name=paste("Figure ", chapter.number, ".",fig.dot," - Focus agreement - IW ",iuw," - sectors ",focus.scope," - participation map", sep=""),
                  width = 21,
                  height = 12)
   
@@ -656,7 +672,7 @@ for(focus.id in c(focus.largest.50.3s)){
   participation$value[participation$value==max(participation$value)]="full in both scenarios"
   
   names(participation)=c("Country", "Difference in agreements")
-  xlsx::write.xlsx(participation, file=paste(output.path,"/Figure ",chapter.number,".3 - Focus agreement - IW ",iuw," - sectors ",focus.scope," - participation map data.xlsx", sep=""), row.names = F)
+  xlsx::write.xlsx(participation, file=paste(output.path,"/Figure ",chapter.number,".",fig.dot," - Focus agreement - IW ",iuw," - sectors ",focus.scope," - participation map data.xlsx", sep=""), row.names = F)
   
   ## focus stats
   
@@ -664,8 +680,9 @@ for(focus.id in c(focus.largest.50.3s)){
   fs.xlsx$type=NULL
   names(fs.xlsx)=c("Coaliton ID","Sectoral scope","Number of members","Total imports of coalition","Total liberalised imports","Coalition's share in sectoral world imports","Share of world sectoral imports liberalised")
   
-  xlsx::write.xlsx(fs.xlsx, file=paste(output.path,"/Figure ",chapter.number,".3 - Focus agreement - IW ",iuw," - sectors ",focus.scope," - Membership statistics.xlsx", sep=""), row.names = F)
+  xlsx::write.xlsx(fs.xlsx, file=paste(output.path,"/Figure ",chapter.number,".",fig.dot," - Focus agreement - IW ",iuw," - sectors ",focus.scope," - Membership statistics.xlsx", sep=""), row.names = F)
   
+  fig.dot=fig.dot+1
   
   
   
@@ -686,6 +703,7 @@ plot=
   ggplot(subset(focus.coalition, sec.count>=3 & import.utility.weight<=-.5), aes(x=coalition.liberalised.trade/1000000000, y=share.lib.intra, size=sec.count))+
   geom_point(color=gta_colour$blue[1])+
   gta_theme()+
+  scale_y_continuous(sec.axis = dup_axis(name=NULL))+
   labs(x="Trade benefitting from removal of crisis-era discrimination\nin USD billion", y="Share of total benefitting trade\ninside the coalition members",
        size="Number of\nsectors")+
   theme(panel.background = element_blank(), 
@@ -699,7 +717,7 @@ plot
 
 gta_plot_saver(plot = plot,
                path = output.path,
-               name = paste0("Figure ", chapter.number, ".4 - Agreement size & liberalised trade")
+               name = paste0("Figure ", chapter.number, ".6 - Agreement size & liberalised trade")
                )
 
 
