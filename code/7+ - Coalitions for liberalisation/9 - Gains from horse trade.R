@@ -502,8 +502,6 @@ focus.coalition=merge(focus.coalition, incl.africa, by="coalition.id", all.x=T)
 
 focus.largest.50.3s=16539
 
-e=subset(focus.coalition, import.utility.weight==-.5 & two.sector==F & grepl("44", sector.scope) &
-           str_count(sector.scope,",")>2)
 
 largest.special.machine.2s=21117
 largest.special.machine.3s=20067
@@ -575,7 +573,8 @@ for(focus.id in largest.version){
   participation.m=subset(cm.multi, coalition.id==focus.id)
   participation.m$member=as.numeric(participation.m$type=="member")*length(single.coalitions)
   
-  participation=merge(participation, participation.m[,c("i.un", "member")], by="i.un", all.x=T)
+  participation=merge(participation, participation.m[,c("i.un", "member")], by="i.un", all=T)
+  participation[is.na(participation)]=0
   participation$gain=participation$member.y-participation$member.x
   
   pre.max=max(participation$gain, na.rm = T)
@@ -746,7 +745,7 @@ plot
 
 gta_plot_saver(plot = plot,
                path = output.path,
-               name = paste0("Figure ", chapter.number, ".6 - Agreement size & liberalised trade")
+               name = paste0("Figure ", chapter.number, ".7 - Agreement size & liberalised trade")
                )
 
 
