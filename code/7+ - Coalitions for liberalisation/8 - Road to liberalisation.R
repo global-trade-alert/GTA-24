@@ -34,6 +34,7 @@ agri.products=cpc.to.hs$hs[cpc.to.hs$cpc %in% agri.sectors]
 
 
 gta_colour_palette()
+red.amber.green=colorRampPalette(c(gta_colour$harmful[1], gta_colour$amber[1], gta_colour$liberalising[1]))
 
 ## Choosing trade data
 gta_trade_value_bilateral(trade.data="2017",df.name="trade")
@@ -103,6 +104,35 @@ cpc2=merge(cpc2, sectoral.imports[,c("sector.scope","share")], by="sector.scope"
 setnames(sectoral.imports,"sector.scope", "cpc")
 
 cpc2$sector.name=factor(cpc2$sector.name, levels=unique(cpc2$sector.name)[order(unique(cpc2$share))])
+
+
+cpc2$member.category="none"
+cpc2$member.category[cpc2$member.size<=49& cpc2$member.size>0]="up to 50"
+cpc2$member.category[cpc2$member.size<=99 & cpc2$member.size>49]="50 - 99"
+cpc2$member.category[cpc2$member.size>99]="100 or more"
+cpc2$member.category=factor(cpc2$member.category, 
+                            levels=c("none","up to 50","50 - 99","100 or more"))
+
+bracket=1
+cpc2$share.world.imports.cat=1
+for(brk in seq(0.1,1,.1)){
+  
+  cpc2$share.world.imports.cat[cpc2$share.world.imports>(brk-.1) & cpc2$share.world.imports<=brk] =bracket
+  bracket=bracket+1
+  
+}
+
+bracket=1
+cpc2$share.world.imports.lib.cat=1
+for(brk in seq(0.1,1,.1)){
+  
+  cpc2$share.world.imports.lib.cat[cpc2$share.world.imports.liberalised>(brk-.1) & cpc2$share.world.imports.liberalised<=brk] =bracket
+  bracket=bracket+1
+  
+}
+
+
+
 
 
 cpc2.20=subset(cpc2, sector.scope %in% sectoral.imports$cpc[1:nr.sectors])
@@ -290,7 +320,7 @@ for(i.weight in c(-.5)){
   
   gta_plot_saver(plot = plot,
                  path = output.path,
-                 name = paste0("Figure ", chapter.number, ".1 - Critical coalition members - (Non-)Agreements at import aversion ",i.weight))
+                 name = paste0("Figure ", chapter.number, ".2 - Critical coalition members - (Non-)Agreements at import aversion ",i.weight))
   
   
 }
@@ -441,10 +471,174 @@ for(i.weight in c(-.25)){
   
   gta_plot_saver(plot = plot,
                  path = output.path,
-                 name = paste0("Figure ", chapter.number, ".2 - Critical coalition members - Top ",nr.sectors," sectors - IW ",i.weight))
+                 name = paste0("Figure ", chapter.number, ".4 - Critical coalition members - Top ",nr.sectors," sectors - IW ",i.weight))
   
   
 }
+
+
+
+
+
+
+# share of sectoral trade
+mean.critical=round(mean(cpc2$share.world.imports)-.05,1)
+max.critical=round(max(cpc2$share.world.imports)-.05,1)
+
+plot=
+  ggplot()+
+  geom_tile(data=cpc2, aes(y=sector.name, x=import.utility.weight, fill=as.factor(share.world.imports.cat)))+
+  scale_fill_manual(values=red.amber.green(11),
+                    na.value="white",
+                    labels=paste(seq(0,.9,.1),"-",seq(.1,1,.1)),
+                    name="Share of\nworld imports\n")+
+  scale_x_continuous(breaks=c(seq(0,-.75,-.25)))+
+  theme(axis.text.x = element_text(angle = 90, vjust=.5),
+        axis.text=element_text(family="Open Sans", size=13, colour="black")) +
+  gta_theme()+
+  labs(x="Relative import aversion", y="")+
+  theme(panel.background = element_blank(), 
+        panel.border=element_rect(size=1, colour="grey",fill = "transparent"), 
+        legend.position="bottom",
+        axis.text.x.bottom = element_text(hjust = 1))
+
+
+
+plot
+
+
+gta_plot_saver(plot = plot,
+               path = output.path,
+               name = paste0("Figure ", chapter.number, ".1 - left-hand side"))
+
+
+# value of liberalised trade
+mean.econ=round(mean(cpc2$share.world.imports.liberalised)-.05,1)
+max.econ=round(max(cpc2$share.world.imports.liberalised)-.05,1)
+plot=ggplot()+
+  geom_tile(data=cpc2, aes(y=sector.name, x=-import.utility.weight, fill=as.factor(share.world.imports.lib.cat)))+
+  scale_fill_manual(values=red.amber.green(11),
+                    na.value="white",
+                    labels=paste(seq(0,.9,.1),"-",seq(.1,1,.1)),
+                    name="Share of\nworld imports\nliberalised")+
+  scale_x_continuous(breaks=c(seq(0,.75,.25)), labels=seq(0,-.75,-.25))+
+  theme(axis.text.x = element_text(angle = 90, vjust=.5),
+        axis.text=element_text(family="Open Sans", size=13, colour="black")) +
+  gta_theme()+
+  labs(x="Relative import aversion", y="")+
+  theme(panel.background = element_blank(), 
+        panel.border=element_rect(size=1, colour="grey",fill = "transparent"), 
+        legend.position="bottom",
+        axis.text.x.bottom = element_text(hjust = 1))
+
+
+
+plot
+
+gta_plot_saver(plot = plot,
+               path = output.path,
+               name = paste0("Figure ", chapter.number, ".1 - right-hand side"))
+
+
+
+
+## map for pul & gp machinery with IW = -.5
+## EU/EEU members
+eu.members=country.names$un_code[country.names$is.eu==T]
+eeu.members=country.names$un_code[country.names$is.eeu==T]
+
+my.sectors=c("Special-purpose machinery")
+coalition.stats$sector.scope=as.numeric(as.character(coalition.stats$sector.scope))
+coalition.members$type=as.character(coalition.members$type)
+
+iw.map=-.5
+
+for(sec in my.sectors){
+  c.code=cpc.shorts$sector.scope[gsub("\\\\n"," ",cpc.shorts$cpc.short)==sec]
+  map.id=subset(coalition.stats, 
+                import.utility.weight==iw.map &
+                  sector.scope==c.code)$coalition.id
+  members=subset(coalition.members, coalition.id == map.id)[,c("i.un","type")]
+  
+  world <- gtalibrary::world.geo
+  names(members)=c("UN", "value")
+  
+  if(10007 %in% members$UN){
+    members=rbind(subset(members, UN!=10007),
+                  data.frame(UN=eu.members,
+                             value=members$value[members$UN==10007]))
+  }
+  
+  if(10008 %in%  members$UN){
+    members=rbind(subset(members, UN!=10008),
+                  data.frame(UN=eeu.members,
+                             value=members$value[members$UN==10008]))
+  }
+  
+  
+  world = merge(world, members[,c("UN","value")], by="UN", all.x=T)
+  
+  ###### IMPORTANT, sort for X (id) again
+  world <-  world[with(world, order(X)),]
+  world$value[is.na(world$value) == T] <- "no exports or\nnot a WTO member"
+  
+  
+  
+  map1=
+    ggplot() +
+    geom_polygon(data= subset(world, country != "Antarctica"), 
+                 aes(x = long, y = lat, group = group, fill = value), size = 0.15, color = "white") +
+    geom_polygon(data=subset(world, country == "Greenland"), aes(x=long, y=lat, group = group), fill="#dadada", size = 0.15, colour = "white") +
+    coord_fixed() + # Important to fix world map proportions
+    scale_y_continuous(limits=c(-55,85))+
+    scale_x_continuous(limits=c(-169,191))+
+    labs(x="", y="", fill="country\nrole") +
+    scale_fill_manual(values = c(gta_colour$amber[1],gta_colour$red[1],gta_colour$green[1],
+                                 gta_colour$blue[1]),
+                      # labels=c("bystander","b","c","d"),
+                      position="bottom")+
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank(),
+          panel.background = element_blank(),
+          legend.position = "bottom",
+          plot.title = element_text(family = "", colour = "#333333", size = 11, hjust = 0.5, margin = margin(b=10)),
+          legend.title = element_text(vjust= 0.3, family="", colour = "#333333", size = 11*0.8, margin = margin(r=10)),
+          legend.text = element_text(family="", colour = "#333333", size = 11*0.8, angle = 0, hjust=0, vjust=0, margin = margin(r=10)),
+          legend.text.align = 0
+    ) 
+  
+  
+  map1
+  
+  gta_plot_saver(plot=map1,
+                 path=output.path,
+                 name=paste("Figure ", chapter.number, ".3 - Agreement map - ",sec, sep=""),
+                 width = 21,
+                 height = 12)
+  
+  ## xlsx
+  map.stats=subset(coalition.stats, coalition.id==map.id)[,c("sector.scope","sector.name","import.utility.weight",
+                                                             "member.size","members.liberalising","freerider.count","bystander.count",
+                                                             "coalition.total.trade","coalition.liberalised.trade", 
+                                                             "intra.coalition.liberalised.trade", "share.world.imports" ,
+                                                             "share.world.imports.liberalised")]
+  
+  map.stats$sector.name=sec
+  names(map.stats)=c("CPC sector (2-digit)","Sector name",
+                     "Import aversion parameter","Number of members",
+                     "Number of members liberalising","Number of freeriders","Number of bystanders",
+                     "Total sectoral imports of coalition","Total liberalised sectoral imports of coalition",
+                     "Total intra-coalition liberalised sectoral imports","Coalition share of sectoral world imports",
+                     "Liberalised share of sectoral world imports")
+  
+  xlsx::write.xlsx(map.stats, file=paste(output.path,"/Figure ", chapter.number, ".3 - Agreement map - ",sec," - summary stats.xlsx",sep=""), row.names = F)
+  
+}
+
 
 
 
