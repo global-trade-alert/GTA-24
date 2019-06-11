@@ -138,7 +138,8 @@ cpc2.20=subset(cpc2, sector.scope %in% sectoral.imports$cpc[1:20])
 
 #### ALL sectors
 ### member size
-p1<-ggplot(cpc2, aes(y=sector.name, x=import.utility.weight))+
+p1=
+  ggplot(cpc2, aes(y=sector.name, x=import.utility.weight))+
   geom_tile(aes(fill=member.category))+
   scale_fill_manual(values=c("#ececec",gta_colour$green.shades(length(unique(cpc2$member.category)))[length(unique(cpc2$member.category)):1]))+
   # scale_fill_gradient(limits=c(0,max(cpc2$member.size)), low="white", high=gta_colour$green[1], na.value=gta_colour$green[1], name=paste("Number of\nmembers"))+
@@ -158,7 +159,7 @@ p2<-ggplot(cpc2, aes(y=sector.name, x=import.utility.weight))+
         axis.text=element_text(family="Open Sans", size=13, colour="black")) +
   gta_theme()+
   theme(panel.background = element_blank())+
-  labs(x="Relative import aversion", y="Sector name",fill="Number of\ncoalition members")
+  labs(x="Relative import aversion", y="Sector",fill="Number of net beneficiaries\nfrom a single sector accord")
 
 
 g1 <- ggplot_gtable(ggplot_build(p1))
