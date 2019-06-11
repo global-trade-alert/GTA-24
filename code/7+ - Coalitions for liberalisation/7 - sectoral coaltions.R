@@ -10,7 +10,7 @@ rm(list=ls())
 loadfonts(device="postscript")
 loadfonts(device="win")
 
-setwd("C:/Users/jfrit/Desktop/Dropbox/GTA cloud")
+gta_setwd()
 
 ## general settings
 incl.agriculture=F
@@ -146,7 +146,7 @@ p1<-ggplot(cpc2, aes(y=sector.name, x=import.utility.weight))+
         axis.text=element_text(family="Open Sans", size=13, colour="black")) +
   gta_theme()+
   theme(panel.background = element_blank())+
-  labs(x="Relative import aversion", y="Sector name",fill="Number of\ncoalition members")
+  labs(x="Relative import aversion", y="Sector",fill="Number of net beneficiaries\nfrom a single sector accord")
 
 
 p2<-ggplot(cpc2, aes(y=sector.name, x=import.utility.weight))+

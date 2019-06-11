@@ -119,7 +119,7 @@ fig3 <- ggplot(subset(subset(stat.country.year, importer %in% c("G20", "China", 
   geom_line(size = 1.1) +
   scale_y_continuous(limits = c(2,3.2), breaks=seq(2,3,.5), labels=seq(2,3,.5), sec.axis = dup_axis()) +
   gta_theme() +
-  ylab("Weighted trade cost\nfaced by importer") +
+  ylab("Trade-weighted importer trade costs") +
   scale_color_manual(values = gta_colour$qualitative[c(1,2,3,8,7)]) +
   theme(legend.title = element_blank(),
         legend.spacing.x = unit (.2, 'cm')) +

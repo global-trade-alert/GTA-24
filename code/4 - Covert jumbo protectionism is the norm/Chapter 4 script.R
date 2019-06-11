@@ -7,11 +7,7 @@ library(RColorBrewer)
 library(dplyr)
 library(splitstackshape)
 
-#setwd("C:/Users/jfrit/Desktop/Dropbox/GTA cloud")
-#setwd("C:/Users/Piotr Lukaszuk/Dropbox/GTA cloud")
-#setwd("/Users/piotrlukaszuk/Dropbox/GTA cloud")
-setwd('C:/Users/Kamran/Dropbox/GTA cloud')
-#setwd('D:/Dropbox/Dropbox/GTA cloud')
+gta_setwd()
 
 chapter.number = 4
 chapter.title = 'Covert jumbo protectionism is the norm'
@@ -135,7 +131,7 @@ for(approach in c("all")){
   
   ## ecdf 
   log10.cdf=ggplot(loop.data, aes(x=log10(trade.value))) + 
-    stat_ecdf(geom = "step", position = "identity",size=1.1) + xlab('Trade value in USD') + ylab('Fraction of Data') + 
+    stat_ecdf(geom = "step", position = "identity",size=1.1) + xlab('Trade value in USD') + ylab('Fraction of discriminatory policy intervention') + 
     ggtitle('Cumulative density function of the value of trade harmed \nby harmful interventions implemented 2008-2019') + 
     theme(plot.title = element_text(hjust = 0.5)) +
     coord_cartesian(xlim = c(5, max(log10(loop.data$trade.value)))+0.01) +
@@ -275,7 +271,7 @@ if (approach == 'conservative'){annual.jumbos.over.500b.ids = subset(loop.data, 
 
 fig.1 =ggplot(annual.jumbos, aes(x=year.implemented,y=intervention.id,fill=intervention.status)) + geom_col() + 
   scale_x_continuous(breaks=2008:2019,labels=2008:2019) + xlab('Year of implementation of the harmful intervention') +
-  ylab(paste('Number of interventions harming trade for over 10 bln USD')) +
+  ylab(paste('Number of jumbo protectionist measures implemented')) +
   scale_fill_manual(name='',values = color.values, labels=c('Trade war interventions','Non-trade war interventions')) +
   gta_theme() +
   scale_y_continuous(sec.axis = dup_axis())
@@ -388,7 +384,10 @@ approach="conservative"
     scale_fill_manual(name='',values=fig.2.data$col) + xlab('') + ylab('') +
     theme(axis.ticks=element_blank(),panel.border = element_blank(),panel.grid=element_blank()) +   theme(axis.text.x=element_blank()) +
     geom_text(aes(x=1.7,y = perc.value,label = ifelse(perc.value>=1,scales::percent(perc.value/100),'')), size=3,position = position_stack(vjust = 0.5)) +
-    theme(legend.spacing.x = unit (.5, 'cm'))
+    theme(legend.spacing.x = unit (.5, 'cm'), 
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "white")
+          ) 
   
   
   fig.2
@@ -423,7 +422,8 @@ approach="conservative"
       panel.border = element_blank(),
       panel.grid=element_blank(),
       axis.ticks = element_blank(),
-      plot.title=element_text(size=14, face="bold")
+      plot.title=element_text(size=14, face="bold"), 
+      panel.grid.major = element_blank(), panel.grid.minor = element_blank()
     )
 
 
@@ -432,7 +432,9 @@ approach="conservative"
     scale_fill_manual(name='',values=cols[cols$group %in% fig.2.data$group,]$col) + xlab('') + ylab('') +
     theme(axis.ticks=element_blank(),panel.border = element_blank(),panel.grid=element_blank()) +   theme(axis.text.x=element_blank()) +
     geom_text(aes(x=1.7,y = perc.value,label = ifelse(perc.value>0,scales::percent(perc.value/100),'')), size=3,position = position_stack(vjust = 0.5)) +
-    theme(legend.spacing.x = unit (.5, 'cm'))
+    theme(legend.spacing.x = unit (.5, 'cm'), 
+          panel.background = element_blank(), 
+          axis.line = element_line(colour = "white")) 
   
     
   

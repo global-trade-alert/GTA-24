@@ -4,7 +4,7 @@ library(data.table)
 library(splitstackshape)
 library(stringr)
 rm(list=ls())
-setwd("C:/Users/jfrit/Desktop/Dropbox/GTA cloud")
+gta_setwd()
 
 gta_colour_palette()
 chapter.number = 10

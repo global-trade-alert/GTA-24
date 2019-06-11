@@ -9,13 +9,7 @@ library(lubridate)
 library(pracma)
 
 
-## Pick-thy-folder
-#setwd("C:/Users/Johannes Fritz/Dropbox/GTA/GTA cloud")
-#setwd("C:/Users/Piotr Lukaszuk/Dropbox/GTA cloud")
-# setwd("/Users/piotrlukaszuk/Dropbox/GTA cloud")
-#setwd('C:/Users/Kamran/Dropbox/GTA cloud')
-setwd("/Users/patrickbuess/Dropbox/Collaborations/GTA cloud")
-# setwd('D:/Dropbox/Dropbox/GTA cloud')
+gta_setwd()
 
 chapter.nr = 6
 chapter.name = '6 - DSU is falling into disuse'
@@ -190,11 +184,11 @@ plot3 <- ggplot()+
                    data.y = "Value",
                    # y.right.enable = T,
                    y.left.name = "Number of DSU cases",
-                   y.right.name = "Share of cumulative G20 cases\nover total cases",
+                   y.right.name = "Share of cumulative G20 cases\nin total number of cases",
                    x.bottom.breaks = seq(1995,2019,1),
                    colour.palette = gta_colour$qualitative[c(1:3)],
                    x.bottom.name = "Year",
-                   colour.labels = c("By a G20 member brought against a G20 member (LHS)","Share of cumulative sums of G20 over total (RHS)","Total (LHS)"),
+                   colour.labels = c("By a G20 member brought against a G20 member (LHS)","Cumulative G20 share of all WTO dispute settlement cases","Total (LHS)"),
                    colour.legend.title = "Complainant")+
   gta_theme(x.bottom.angle = 45)
 
@@ -235,8 +229,8 @@ fig4.plot <- gather(fig4, type, value, c("DSU","Trade in trillion USD","DSU trad
 plot4 <- ggplot()+
   geom_line(data=subset(fig4.plot, type == "DSU"), aes(x=Year, y=value, colour=type), size=1)+
   geom_line(data=subset(fig4.plot, type == "DSU trade ratio"), aes(x=Year, y=value/(1.5/30), colour=type), size=1)+
-  geom_line(data=subset(fig4.plot, type == "DSU moving average"), aes(x=Year, y=value, colour=type), size=1)+
-  geom_line(data=subset(fig4.plot, type == "Ratio moving average"), aes(x=Year, y=value/(1.5/30), colour=type), size=1)+
+  geom_line(data=subset(fig4.plot, type == "DSU moving average"), aes(x=Year, y=value, colour=type), size=1, linetype='dashed')+
+  geom_line(data=subset(fig4.plot, type == "Ratio moving average"), aes(x=Year, y=value/(1.5/30), colour=type), size=1, linetype='dashed')+
   gta_plot_wrapper(data=fig4.plot,
                    data.x="Year",
                    data.y="value",
