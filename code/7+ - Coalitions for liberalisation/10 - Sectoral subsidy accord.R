@@ -229,7 +229,8 @@ bar.chart=bar.chart[order(bar.chart$intervention.type),]
 bar.chart$position=bar.chart$trade.share/2
 bar.chart$position[bar.chart$position<.008]=.008
 bar.chart$position[bar.chart$intervention.type=="Tax or social insurance relief" & bar.chart$ets.status=="Including EU ETS"]=.10
-bar.chart$position[bar.chart$intervention.type=="All included instruments" & bar.chart$ets.status=="Including EU ETS"]=.215
+levels(bar.chart$intervention.type) = replace(levels(bar.chart$intervention.type), levels(bar.chart$intervention.type) == 'All included instruments', 'All subsidies listed above')
+bar.chart$position[bar.chart$intervention.type=="All subsidies listed above" & bar.chart$ets.status=="Including EU ETS"]=.215
 
 p1=
 ggplot()+
