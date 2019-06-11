@@ -12,6 +12,10 @@ chapter.title = 'A subsidy accord'
 output.path = paste(chapter.number,chapter.title,sep = ' - ')
 output.path=paste("0 report production/GTA 24/tables & figures/",output.path, sep="")
 
+d.path="0 report production/GTA 24/0 GTA database at production/master_plus.Rdata"
+r.path="0 report production/GTA 24/0 GTA database at production/database replica - parts - base.Rdata"
+
+
 ## key members
 eu=10007
 usa=840
@@ -445,4 +449,63 @@ names(subsidy.exposure.xlsx)=c("WTO member","Export percentage affected by inter
 subsidy.exposure.xlsx=subsidy.exposure.xlsx[,c(1,3,2)]
 xlsx::write.xlsx(subsidy.exposure.xlsx, file=paste(output.path,paste("/Table ", chapter.number, ".1 - Relative import and export exposure.xlsx", sep=""), sep=""),row.names = F)
 
+## Simon's 10.3 spiderweb
+## using https://www.r-graph-gallery.com/143-spider-chart-with-saveral-individuals/
+library(fmsb)
+row.nms=c("1",
+          "2",
+          "Accord includes EU ETS",
+          "Accord excludes EU ETS"
+)
+spider=read.csv("0 report production/GTA 24/data/10 - A subsidy accord/SE spiderweb.csv",sep=";", stringsAsFactors = F, row.names = row.nms)
+names(spider)=c("None excluded",	
+                "Exclude\ntax or social\ninsurance relief",
+                "Exclude\nstate loans",
+                "Exclude\nstate aid, nes",
+                "Exclude\nproduction subsidies",
+                "Exclude\nprice stabilisation",
+                "Exclude\nloan guarantee",
+                "Exclude\ninterest payment\nsubsidies",
+                "Exclude\nin-kind grant",
+                "Exclude\nfinancial grants",
+                "Exclude\ncapital injection\nand equity stakes"
+)
 
+spider=spider[,c(1,ncol(spider):2)]
+## HI Kamran, this gives you an ugly version of SE's plot
+#eps
+cairo_ps(paste0(output.path, '/Figure 10.3.eps'), bg = "white", width=11, height=11/1.8, family="Open Sans")
+radarchart(spider)
+## I was just about to make it prettier using the URL above:
+colors_border=c( gta_colour$qualitative[3], gta_colour$qualitative[1])
+radarchart(spider,
+           seg = 6,
+           axistype = 1,
+           #custom polygon
+           pcol=colors_border , plwd=4 , plty=1,
+           #custom the grid
+           cglcol="grey", cglty=1, axislabcol=1, caxislabels=seq(0,-.3,-.05), cglwd=0.8,
+           #custom labels
+           vlcex=0.82 
+           )
+
+legend(x=1, y=1, legend = rownames(spider[-c(1,2),]), bty = "n", pch=20 , col=colors_border , text.col = 1, cex=0.82, pt.cex=3)
+dev.off()
+
+#png
+png(paste0(output.path, '/Figure 10.3.png'), width=800, height=800/1.8, res=76)
+radarchart(spider)
+colors_border=c( gta_colour$qualitative[3], gta_colour$qualitative[1])
+radarchart(spider,
+           seg = 6,
+           axistype = 1,
+           #custom polygon
+           pcol=colors_border , plwd=4 , plty=1,
+           #custom the grid
+           cglcol="grey", cglty=1, axislabcol=1, caxislabels=seq(0,-.3,-.05), cglwd=0.8,
+           #custom labels
+           vlcex=0.82
+)
+
+legend(x=1, y=1, legend = rownames(spider[-c(1,2),]), bty = "n", pch=20 , col=colors_border , text.col = 1, cex=0.82, pt.cex=3)
+dev.off()

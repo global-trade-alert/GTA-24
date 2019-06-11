@@ -10,8 +10,7 @@ rm(list=ls())
 loadfonts(device="postscript")
 loadfonts(device="win")
 
-setwd("C:/Users/jfrit/Desktop/Dropbox/GTA cloud")
-
+gta_setwd()
 
 ## general settings
 incl.agriculture=F
@@ -38,6 +37,7 @@ red.amber.green=colorRampPalette(c(gta_colour$harmful[1], gta_colour$amber[1], g
 
 ## Choosing trade data
 gta_trade_value_bilateral(trade.data="2017",df.name="trade")
+
 setnames(trade, "hs6","affected.product")
 total.imports=aggregate(trade.value ~ affected.product, trade, sum)
 setnames(total.imports, "trade.value","total.imports")
@@ -279,7 +279,7 @@ for(i.weight in c(-.5)){
       scale_fill_gradientn(colours = c(gta_colour$harmful[1], "#ececec", gta_colour$liberalising[1]),
                            breaks=c(-1,0,1),
                            na.value="white",
-                           name="favorability\ntowards\nagreement")+
+                           name="Favourability towards\nsingle sector accord")+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+
       geom_hline(yintercept = .8, linetype="dashed")+
@@ -302,7 +302,7 @@ for(i.weight in c(-.5)){
       scale_fill_gradient(low="#ececec", 
                           high=gta_colour$liberalising[1],
                           na.value="white",
-                          name="favorability\ntowards\nagreement",
+                          name="Favourability towards\nsingle sector accord",
                           breaks=c(0,1))+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+
@@ -430,7 +430,7 @@ for(i.weight in c(-.25)){
       scale_fill_gradientn(colours = c(gta_colour$harmful[1], "#ececec", gta_colour$liberalising[1]),
                            breaks=c(-1,0,1),
                            na.value="white",
-                           name="favorability\ntowards\nagreement")+
+                           name="Favourability towards\nsingle sector accord")+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+
       geom_hline(yintercept = .8, linetype="dashed")+
@@ -453,7 +453,7 @@ for(i.weight in c(-.25)){
       scale_fill_gradient(low="#ececec", 
                           high=gta_colour$liberalising[1],
                           na.value="white",
-                          name="favorability\ntowards\nagreement",
+                          name="Favourability towards\nsingle sector accord",
                           breaks=c(0,1))+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+
@@ -491,7 +491,7 @@ plot=
   scale_fill_manual(values=red.amber.green(11),
                     na.value="white",
                     labels=paste(seq(0,.9,.1),"-",seq(.1,1,.1)),
-                    name="Share of\nworld imports\n")+
+                    name="Share of total\nsectoral imports\nimplicated by accord")+
   scale_x_continuous(breaks=c(seq(0,-.75,-.25)))+
   theme(axis.text.x = element_text(angle = 90, vjust=.5),
         axis.text=element_text(family="Open Sans", size=13, colour="black")) +
@@ -520,7 +520,7 @@ plot=ggplot()+
   scale_fill_manual(values=red.amber.green(11),
                     na.value="white",
                     labels=paste(seq(0,.9,.1),"-",seq(.1,1,.1)),
-                    name="Share of\nworld imports\nliberalised")+
+                    name="Share of total\nsectoral imports\nreformed by accord")+
   scale_x_continuous(breaks=c(seq(0,.75,.25)), labels=seq(0,-.75,-.25))+
   theme(axis.text.x = element_text(angle = 90, vjust=.5),
         axis.text=element_text(family="Open Sans", size=13, colour="black")) +
@@ -575,13 +575,19 @@ for(sec in my.sectors){
                              value=members$value[members$UN==10008]))
   }
   
-  
+  members$value[members$value=="bystander"]="bystander\n"
+  members$value[members$value=="freerider"]="free rider\n"
+  members$value[members$value=="member"]="potential member\n(net gainer)"
+
   world = merge(world, members[,c("UN","value")], by="UN", all.x=T)
   
   ###### IMPORTANT, sort for X (id) again
   world <-  world[with(world, order(X)),]
   world$value[is.na(world$value) == T] <- "no exports or\nnot a WTO member"
   
+  
+  world$value=factor(world$value, levels = c("potential member\n(net gainer)","bystander\n",
+                                                 "free rider\n","no exports or\nnot a WTO member"))
   
   
   map1=
@@ -593,7 +599,7 @@ for(sec in my.sectors){
     scale_y_continuous(limits=c(-55,85))+
     scale_x_continuous(limits=c(-169,191))+
     labs(x="", y="", fill="country\nrole") +
-    scale_fill_manual(values = c(gta_colour$amber[1],gta_colour$red[1],gta_colour$green[1],
+    scale_fill_manual(values = c(gta_colour$green[1],gta_colour$amber[1],gta_colour$red[1],
                                  gta_colour$blue[1]),
                       # labels=c("bystander","b","c","d"),
                       position="bottom")+

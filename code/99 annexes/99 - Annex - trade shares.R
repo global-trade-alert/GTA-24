@@ -6,6 +6,10 @@ rm(list = ls())
 gta_setwd()
 source("0 report production/GTA 24/help files/GTA 24 cutoff and definitions.R")
 
+d.path="0 report production/GTA 24/0 GTA database at production/master_plus.Rdata"
+r.path="0 report production/GTA 24/0 GTA database at production/database replica - parts - base.Rdata"
+
+
 path="0 report production/GTA 24/tables & figures/annex - p. 1 - title tables/"
 
 chapters=c("D","E","F","G","I","L","M","P","TARIFF","X")
@@ -22,8 +26,10 @@ for(cty in g20.member.names){
                      mast.chapters = chapters,
                      keep.mast = T,
                      group.mast = F,
-                     intervention.ids = c(70350, 18891, 16819, 71578, 58794, 18254, 13633, 15366, 13512, 18892, 69601),
-                     keep.interventions = F)
+                     intervention.ids = manually.removed.interventions,
+                     keep.interventions = F,
+                     data.path = d.path,
+                     replica.path =r.path)
     
     trade.coverage.estimates=trade.coverage.estimates[,c(3,4,6:ncol(trade.coverage.estimates))]
     

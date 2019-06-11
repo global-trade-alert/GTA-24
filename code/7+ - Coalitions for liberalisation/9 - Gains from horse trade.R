@@ -383,19 +383,21 @@ horse.overview=
   geom_histogram(bins=200, position="identity")+
   scale_fill_manual(values=c(gta_colour$qualitative[c(1,3,5,7)]))+
   scale_alpha_manual(values=c(1,.6,.6,.6))+
-  labs(x="Difference of liberalised import value in multi-sector agreement\nand the sum of the single-sector agreements,\nbillion USD ", 
-       y="Nr of agreements",
+  labs(x="Additional imports reformed by a multi-sectoral accord as opposed to single-sector accords in same sectors,\nbillions USD", 
+       y="Number of agreements",
        fill="Import aversion")+
   guides(alpha=F)+
   scale_x_continuous(limits=c(-100,4200), breaks=seq(-500,4000,500), labels=prettyNum(seq(-500,4000,500), big.mark = "'"))+
   coord_cartesian(ylim = c(0, 30))+
-  gta_theme()
+  gta_theme() 
 
 horse.overview
 
 gta_plot_saver(plot=horse.overview,
                path=output.path,
-               name= paste("Figure ",chapter.number,".2 - Change in liberalised world imports", sep=""))
+               name= paste("Figure ",chapter.number,".2 - Change in liberalised world imports", sep=""),
+               eps = F,
+               cairo_ps = T)
 
 
 horse.overview=
@@ -403,8 +405,8 @@ horse.overview=
   geom_histogram(bins=200, position="identity")+
   scale_fill_manual(values=c(gta_colour$qualitative[c(1,3,5,7)]))+
   scale_alpha_manual(values=c(1,.6,.6,.6))+
-  labs(x="Difference of liberalised import value in multi-sector agreement\nand the sum of the single-sector agreements,\nbillion USD ", 
-       y="Nr of agreements",
+  labs(x="Additional imports reformed by a multi-sectoral accord as opposed to single-sector accords in same sectors,\nbillions USD", 
+       y="Number of agreements",
        fill="Import aversion")+
   guides(alpha=F)+
   scale_x_continuous(breaks=seq(0,7000,500), labels=prettyNum(seq(0,7000,500), big.mark = "'"))+
@@ -415,7 +417,9 @@ horse.overview
 
 gta_plot_saver(plot=horse.overview,
                path=output.path,
-               name= paste("Figure ",chapter.number,".1 - Change in liberalised world imports - 2-sector agreements only", sep=""))
+               name= paste("Figure ",chapter.number,".1 - Change in liberalised world imports - 2-sector agreements only", sep=""),
+               eps = F,
+               cairo_ps = T)
 
 
 
@@ -446,11 +450,11 @@ for(i in seq(density.step,1,density.step)){
 critical.mass=
   ggplot(data=mc.density,aes(x=bin, y=share, fill=as.factor(type)))+
   geom_bar(stat="identity", position = "dodge")+
-  scale_fill_manual(values=c(gta_colour$qualitative[c(1,3)]))+
+  scale_fill_manual(name='Type of sectoral accord',values=c(gta_colour$qualitative[c(1,3)]))+
   scale_x_continuous(limits=c(.7,1), breaks=seq(.7,1,.1))+
   scale_y_continuous(limits=c(0,.6), sec.axis =  dup_axis(name=NULL))+
   labs(x="Share of sectoral world imports",
-       y="Share of observed coalitions", 
+       y="Share of possible sectoral deals", 
        fill="Coalition   \nscope")+
   gta_theme()
 
@@ -656,7 +660,7 @@ for(focus.id in largest.version){
   }
   
   if(length(map.labels)==2){
-    map.labels=c("Non-member", "Member")
+    map.labels=c("Non-member", "Member (net gainer)")
     map.legend.title="Membership status"
   } else {
     
@@ -741,7 +745,7 @@ plot=
   geom_point(color=gta_colour$blue[1])+
   gta_theme()+
   scale_y_continuous(sec.axis = dup_axis(name=NULL))+
-  labs(x="Trade benefitting from removal of crisis-era discrimination\nin USD billion", y="Share of total benefitting trade\ninside the coalition members",
+  labs(x="Total value of trade reformed by an accord, billions USD", y="Share of trade reformed that\nbenefits members of the accord",
        size="Number of\nsectors")+
   theme(panel.background = element_blank(), 
         panel.border=element_rect(size=1, colour="grey",fill = "transparent"), 
