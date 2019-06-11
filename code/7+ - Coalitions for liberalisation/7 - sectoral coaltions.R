@@ -147,7 +147,7 @@ p1=
         axis.text=element_text(family="Open Sans", size=13, colour="black")) +
   gta_theme()+
   theme(panel.background = element_blank())+
-  labs(x="Relative import aversion", y="Sector",fill="Number of net beneficiaries\nfrom a single sector accord")
+  labs(x="Relative import aversion", y="Sector",fill="Number of net beneficiaries\nfrom a single-sector accord")
 
 
 p2<-ggplot(cpc2, aes(y=sector.name, x=import.utility.weight))+
@@ -159,7 +159,7 @@ p2<-ggplot(cpc2, aes(y=sector.name, x=import.utility.weight))+
         axis.text=element_text(family="Open Sans", size=13, colour="black")) +
   gta_theme()+
   theme(panel.background = element_blank())+
-  labs(x="Relative import aversion", y="Sector",fill="Number of net beneficiaries\nfrom a single sector accord")
+  labs(x="Relative import aversion", y="Sector",fill="Number of net beneficiaries\nfrom a single-sector accord")
 
 
 g1 <- ggplot_gtable(ggplot_build(p1))
