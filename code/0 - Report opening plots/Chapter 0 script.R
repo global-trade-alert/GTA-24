@@ -28,7 +28,7 @@ gta_trade_coverage(
 )
 
 chart1=trade.coverage.estimates
-chart1$version="All discrimination"
+chart1$version="All trade discrimination"
 chart2=chart1
 
 gta_trade_coverage(
@@ -88,7 +88,7 @@ gta_trade_coverage(
 )
 
 trade.coverage.estimates$version=NA
-trade.coverage.estimates$version[trade.coverage.estimates$`MAST chapter ID`=="P"]="Export-related measures"
+trade.coverage.estimates$version[trade.coverage.estimates$`MAST chapter ID`=="P"]="Export-related measures (including export subsidies)"
 trade.coverage.estimates$version[trade.coverage.estimates$`MAST chapter ID`=="L"]="Subsidies (excluding export subsidies)"
 trade.coverage.estimates$version[trade.coverage.estimates$`MAST chapter ID`=="TARIFF"]="Import tariff increases"
 
@@ -104,7 +104,7 @@ chart2.plot=rbind(chart2.plot,
                              stringsAsFactors = F))
 
 chart2.plot$position=chart2.plot$value+.05
-chart2.plot$position[chart2$version=="Export-related measures"]=chart2.plot$value[chart2$version=="Export-related measures"]-.05
+chart2.plot$position[chart2$version=="Export-related measures (including export subsidies)"]=chart2.plot$value[chart2$version=="Export-related measures (including export subsidies)"]-.05
 chart2.plot$position[chart2$version=="Import tariff increases"]=chart2.plot$value[chart2$version=="Import tariff increases"]+.03
 
 plot2=

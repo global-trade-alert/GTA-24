@@ -131,7 +131,7 @@ for(approach in c("all")){
   
   ## ecdf 
   log10.cdf=ggplot(loop.data, aes(x=log10(trade.value))) + 
-    stat_ecdf(geom = "step", position = "identity",size=1.1) + xlab('Trade value in USD') + ylab('Fraction of discriminatory policy intervention') + 
+    stat_ecdf(geom = "step", position = "identity",size=1.1) + xlab('Trade value in USD') + ylab('Share of discriminatory policy intervention since November 2008') + 
     ggtitle('Cumulative density function of the value of trade harmed \nby harmful interventions implemented 2008-2019') + 
     theme(plot.title = element_text(hjust = 0.5)) +
     coord_cartesian(xlim = c(5, max(log10(loop.data$trade.value)))+0.01) +

@@ -4,6 +4,7 @@ library(gtable)
 library(grid)
 library(data.table)
 library(gridExtra)
+library(extrafont)
 rm(list=ls())
 
 # font_import()
@@ -37,7 +38,6 @@ red.amber.green=colorRampPalette(c(gta_colour$harmful[1], gta_colour$amber[1], g
 
 ## Choosing trade data
 gta_trade_value_bilateral(trade.data="2017",df.name="trade")
-
 setnames(trade, "hs6","affected.product")
 total.imports=aggregate(trade.value ~ affected.product, trade, sum)
 setnames(total.imports, "trade.value","total.imports")
@@ -279,7 +279,7 @@ for(i.weight in c(-.5)){
       scale_fill_gradientn(colours = c(gta_colour$harmful[1], "#ececec", gta_colour$liberalising[1]),
                            breaks=c(-1,0,1),
                            na.value="white",
-                           name="Favourability towards\nsingle sector accord")+
+                           name="Favourability towards\nsingle-sector accord")+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+
       geom_hline(yintercept = .8, linetype="dashed")+
@@ -302,7 +302,7 @@ for(i.weight in c(-.5)){
       scale_fill_gradient(low="#ececec", 
                           high=gta_colour$liberalising[1],
                           na.value="white",
-                          name="Favourability towards\nsingle sector accord",
+                          name="Favourability towards\nsingle-sector accord",
                           breaks=c(0,1))+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+
@@ -430,7 +430,7 @@ for(i.weight in c(-.25)){
       scale_fill_gradientn(colours = c(gta_colour$harmful[1], "#ececec", gta_colour$liberalising[1]),
                            breaks=c(-1,0,1),
                            na.value="white",
-                           name="Favourability towards\nsingle sector accord")+
+                           name="Favourability towards\nsingle-sector accord")+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+
       geom_hline(yintercept = .8, linetype="dashed")+
@@ -453,7 +453,7 @@ for(i.weight in c(-.25)){
       scale_fill_gradient(low="#ececec", 
                           high=gta_colour$liberalising[1],
                           na.value="white",
-                          name="Favourability towards\nsingle sector accord",
+                          name="Favourability towards\nsingle-sector accord",
                           breaks=c(0,1))+
       scale_y_continuous(breaks=seq(0,1,.2))+
       coord_flip()+

@@ -385,7 +385,7 @@ horse.overview=
   scale_alpha_manual(values=c(1,.6,.6,.6))+
   labs(x="Additional imports reformed by a multi-sectoral accord as opposed to single-sector accords in same sectors,\nbillions USD", 
        y="Number of agreements",
-       fill="Import aversion")+
+       fill="Degree of import aversion")+
   guides(alpha=F)+
   scale_x_continuous(limits=c(-100,4200), breaks=seq(-500,4000,500), labels=prettyNum(seq(-500,4000,500), big.mark = "'"))+
   coord_cartesian(ylim = c(0, 30))+
@@ -407,7 +407,7 @@ horse.overview=
   scale_alpha_manual(values=c(1,.6,.6,.6))+
   labs(x="Additional imports reformed by a multi-sectoral accord as opposed to single-sector accords in same sectors,\nbillions USD", 
        y="Number of agreements",
-       fill="Import aversion")+
+       fill="Degree of import aversion")+
   guides(alpha=F)+
   scale_x_continuous(breaks=seq(0,7000,500), labels=prettyNum(seq(0,7000,500), big.mark = "'"))+
   coord_cartesian(ylim = c(0, 15))+
@@ -745,7 +745,7 @@ plot=
   geom_point(color=gta_colour$blue[1])+
   gta_theme()+
   scale_y_continuous(sec.axis = dup_axis(name=NULL))+
-  labs(x="Total value of trade reformed by an accord, billions USD", y="Share of trade reformed that\nbenefits members of the accord",
+  labs(x="Total value of trade reformed by accord, billions USD", y="Share of trade reformed that\nbenefits members of the accord",
        size="Number of\nsectors")+
   theme(panel.background = element_blank(), 
         panel.border=element_rect(size=1, colour="grey",fill = "transparent"), 
