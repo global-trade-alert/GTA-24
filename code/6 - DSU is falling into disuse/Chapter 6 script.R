@@ -312,7 +312,7 @@ for(year in c(2009, 2012, 2015, 2018)){
                      separate.exporter.groups = T,
                      group.exporters = F,
                      keep.exporters = T,
-                     intervention.ids = c(70350, 18891, 16819, 71578, 58794, 18254, 13633, 15366, 13512, 18892),
+                     intervention.ids = manually.removed.interventions,
                      keep.interventions = F)
   
   coverages <- rbind(coverages, data.frame(implementing = trade.coverage.estimates[,1],
